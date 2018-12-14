@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using System.Management;
+using System.Collections.ObjectModel;
 
 namespace thecrypto
 {
@@ -43,39 +44,9 @@ namespace thecrypto
         internal string digest;
         internal int currMailbox;
 
-        public List<Box> boxes = new List<Box>();
+        internal ObservableCollection<Mailbox> mailboxes;
 
         public bool Use_save_post = false;
-
-        //ящик
-        [Serializable]
-        public class Box
-        {
-            public string adress = "";
-            public string cr_pswd = "";
-            [NonSerialized]
-            public string pswd = "";
-
-            //список адресов получателей
-            public List<Send_box> send_adresses = new List<Send_box>();
-        }
-
-        //адреса получателей для каждого ящика
-        [Serializable]
-        public class Send_box
-        {
-            public string adress = "";
-            public string key_RSA_keys_public = "";
-            public string key_RSA_DS_public = "";
-
-            //ключи для RSA
-            public string My_key_RSA_keys_private = "";
-            public string My_key_RSA_keys_public = "";
-            public string My_key_RSA_DS_private = "";
-            public string My_key_RSA_DS_public = "";
-            //ключ Rijndael
-            public string My_key_Rijndael = "";
-        }
 
         public int port_smtp = 587;
         public int port_pop3 = 995;
@@ -96,6 +67,8 @@ namespace thecrypto
             this.login = login;
             this.digest = digest;
             this.currMailbox = currMailbox;
+
+            this.mailboxes = new ObservableCollection<Mailbox>();
         }
 
         public string getAccountPath()

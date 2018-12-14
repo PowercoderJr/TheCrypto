@@ -5,14 +5,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:thecrypto"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="250"/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <ListBox x:Name="mailboxesLB" HorizontalAlignment="Stretch" Margin="10,10,10,10" VerticalAlignment="Stretch" >
-        </ListBox>
+        Title="The Crypto" Height="450" Width="800">
+    <DockPanel LastChildFill="True">
+        <DockPanel Width="250" DockPanel.Dock="Left">
+            <DockPanel.Resources>
+                <Style TargetType="Image" BasedOn="{StaticResource clickableImage}"/>
+            </DockPanel.Resources>
+            <Label x:Name="nameLabel" DockPanel.Dock="Top" Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+            <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="10,0,10,10" Height="48">
+                <Grid.Resources>
+                    <Style TargetType="Image" BasedOn="{StaticResource clickableImage}">
+                        <Setter Property="Margin" Value="2"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Image Name="letterBtn" Grid.Column="0" Source="Resources/letter.png"/>
+                <Image Name="refreshBtn" Grid.Column="1" Source="Resources/refresh.png"/>
+                <Image Name="mailbookhBtn" Grid.Column="2" Source="Resources/mailbook.png"/>
+                <Image Name="settingsBtn" Grid.Column="3" Source="Resources/settings.png"/>
+                <Image Name="logoutBtn" Grid.Column="4" Source="Resources/logout.png"/>
+            </Grid>
+            <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="10" Height="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Image Name="addMailboxBtn" Grid.Column="0" Source="Resources/add.png" MouseLeftButtonUp="addMailboxBtn_MouseLeftButtonUp"/>
+                <Image Name="editMailboxBtn" Grid.Column="1" Source="Resources/edit.png" MouseLeftButtonUp="editMailboxBtn_MouseLeftButtonUp"/>
+                <Image Name="removeMailboxBtn" Grid.Column="2" Source="Resources/remove.png" MouseLeftButtonUp="removeMailboxBtn_MouseLeftButtonUp"/>
+            </Grid>
+            <ListBox x:Name="mailboxesLB" HorizontalAlignment="Stretch" Margin="10,0" VerticalAlignment="Stretch"/>
+        </DockPanel>
+        <DockPanel>
 
-    </Grid>
+        </DockPanel>
+    </DockPanel>
 </Window>
