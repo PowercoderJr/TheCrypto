@@ -47,17 +47,11 @@ namespace thecrypto
         internal ObservableCollection<Mailbox> mailboxes;
 
         public bool Use_save_post = false;
-
-        public int port_smtp = 587;
-        public int port_pop3 = 995;
-        public int port_imap = 993;
         public int count = 5;
-        public string name_smpt = "smtp.";
-        public string name_imap = "imap.";
 
-        public byte curr_proto = 0;
+        //public byte curr_proto = 0;
 
-        public bool ssl = true;
+        public bool useSsl = true;
 
         public bool Crypt = false;
         public bool DS = false;

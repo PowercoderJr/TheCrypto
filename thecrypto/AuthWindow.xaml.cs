@@ -17,7 +17,7 @@ namespace thecrypto
         {
             statusLabel.Content = "";
             string login = loginTB.Text.Trim();
-            if (login.Equals("") || passTB.Password.Equals(""))
+            if (login.Length == 0 || passTB.Password.Length == 0)
             {
                 statusLabel.Content = "Введите логин и пароль";
                 return;
@@ -45,7 +45,7 @@ namespace thecrypto
         {
             statusLabel.Content = "";
             string login = loginTB.Text.Trim();
-            if (login.Equals("") || passTB.Password.Equals(""))
+            if (login.Length == 0 || passTB.Password.Length == 0)
             {
                 statusLabel.Content = "Введите логин и пароль";
                 return;

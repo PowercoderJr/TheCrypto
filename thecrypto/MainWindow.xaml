@@ -41,10 +41,12 @@
                 <Image Name="editMailboxBtn" Grid.Column="1" Source="Resources/edit.png" MouseLeftButtonUp="editMailboxBtn_MouseLeftButtonUp"/>
                 <Image Name="removeMailboxBtn" Grid.Column="2" Source="Resources/remove.png" MouseLeftButtonUp="removeMailboxBtn_MouseLeftButtonUp"/>
             </Grid>
-            <ListBox x:Name="mailboxesLB" HorizontalAlignment="Stretch" Margin="10,0" VerticalAlignment="Stretch"/>
+            <ListBox x:Name="mailboxesLB" HorizontalAlignment="Stretch" Margin="10,0" VerticalAlignment="Stretch" MouseDoubleClick="mailboxesLB_MouseDoubleClick"/>
         </DockPanel>
         <DockPanel>
-
+            <Label x:Name="currEmailLabel" DockPanel.Dock="Top" Content="CurrEmail" VerticalAlignment="Top" Margin="10,10,10,0"/>
+            <TreeView x:Name="lettersTV" DockPanel.Dock="Top" Height="120" Margin="10,0"/>
+            <WebBrowser Margin="10,10"/>
         </DockPanel>
     </DockPanel>
 </Window>
