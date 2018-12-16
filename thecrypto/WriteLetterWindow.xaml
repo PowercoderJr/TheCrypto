@@ -1,0 +1,46 @@
+﻿<Window x:Class="thecrypto.WriteLetterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ex="clr-namespace:Smith.WPF.HtmlEditor;assembly=Smith.WPF.HtmlEditor"
+        xmlns:local="clr-namespace:thecrypto"
+        mc:Ignorable="d"
+        Title="The Crypto - Отправить письмо" Height="450" Width="800">
+    <DockPanel>
+        <Grid DockPanel.Dock="Top" Margin="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label Content="Отправитель:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <DockPanel Grid.Column="1" x:Name="fromToDatetimeLabel" VerticalAlignment="Stretch">
+                <TextBox DockPanel.Dock="Left" x:Name="senderNameTB" BorderThickness="1,1,0,1"/>
+                <TextBox x:Name="sendetAddressTB" HorizontalAlignment="Stretch" IsReadOnly="True" BorderThickness="0,1,1,1"/>
+            </DockPanel>
+            <Label Grid.Row="1" Content="Получатели:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="recipientsTB"/>
+            <Label Grid.Row="2" Content="Тема:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="subjectTB"/>
+            <Label Grid.Row="3" Content="Подпись:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <Label Grid.Row="4" Content="Шифрование:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        </Grid>
+        <Border DockPanel.Dock="Bottom" BorderBrush="#FFC5C5C5" BorderThickness="0,1,0,0" Padding="8">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Height="30">
+                    <Button x:Name="GetTextButton" Content="Отправить" VerticalAlignment="Stretch"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal"/>
+            </DockPanel>
+        </Border>
+        <ex:HtmlEditor x:Name="Editor" />
+    </DockPanel>
+</Window>

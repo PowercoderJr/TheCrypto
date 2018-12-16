@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:thecrypto"
         mc:Ignorable="d"
         Title="Почтовый ящик" Height="300" Width="500" ResizeMode="NoResize">
-    <Grid>
+    <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="16"/>
             <RowDefinition Height="3*"/>
@@ -17,25 +17,25 @@
             <RowDefinition Height="16"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="85"/>
             <ColumnDefinition Width="5*"/>
             <ColumnDefinition Width="8*"/>
         </Grid.ColumnDefinitions>
         <Label Content="Имя:" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Center"/>
         <Label Content="Адрес:" HorizontalAlignment="Right" Grid.Row="2" VerticalAlignment="Center"/>
         <Label Content="Пароль:" HorizontalAlignment="Right" Grid.Row="3" VerticalAlignment="Center"/>
-        <TextBox x:Name="nameTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,8,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <TextBox x:Name="addressTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,8,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <PasswordBox x:Name="passTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,8,0" Grid.Row="3" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-        <Grid Grid.Row="4" Grid.ColumnSpan="3" Margin="8,0">
+        <TextBox x:Name="nameTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,0,0" Grid.Row="1" TextWrapping="Wrap" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <TextBox x:Name="addressTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,0,0" Grid.Row="2" TextWrapping="Wrap" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <PasswordBox x:Name="passTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,0,0" Grid.Row="3" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+        <Grid Grid.Row="4" Grid.ColumnSpan="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="85"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="85"/>
+                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="50"/>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
@@ -43,16 +43,16 @@
             <TextBox x:Name="smtpDomainTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
             <Label Grid.Column="2" Content="Порт:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             <TextBox x:Name="smtpPortTB" Grid.Column="3" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-            <CheckBox x:Name="smtpAutosetChB" Grid.Column="4" Margin="8,11,0,12" Content="Автоматически" IsChecked="True"/>
+            <CheckBox x:Name="smtpAutosetChB" Grid.Column="4" Margin="8,11,0,6" Content="Автоматически" IsChecked="True" HorizontalAlignment="Right"/>
             
             <Label Grid.Row="1" Content="IMAP:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             <TextBox x:Name="imapDomainTB" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
             <Label Grid.Row="1" Grid.Column="2" Content="Порт:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             <TextBox x:Name="imapPortTB" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
-            <CheckBox x:Name="imapAutosetChB" Grid.Row="1" Grid.Column="4" Margin="8,11,0,12" Content="Автоматически" IsChecked="True"/>
+            <CheckBox x:Name="imapAutosetChB" Grid.Row="1" Grid.Column="4" Margin="8,11,0,6" Content="Автоматически" IsChecked="True" HorizontalAlignment="Right"/>
 
         </Grid>
-        <Button x:Name="okBtn" Grid.ColumnSpan="2" Content="ОК" HorizontalAlignment="Stretch" Margin="8,4,4,4" Grid.Row="5" VerticalAlignment="Stretch" Click="okBtn_Click"/>
-        <Button x:Name="cancelBtn" Grid.Column="2" Content="Отмена" HorizontalAlignment="Stretch" Margin="4,4,8,4" Grid.Row="5" VerticalAlignment="Stretch" Click="cancelBtn_Click"/>
+        <Button x:Name="okBtn" Grid.ColumnSpan="2" Content="ОК" HorizontalAlignment="Stretch" Margin="0,4,4,4" Grid.Row="5" VerticalAlignment="Stretch" Click="okBtn_Click"/>
+        <Button x:Name="cancelBtn" Grid.Column="2" Content="Отмена" HorizontalAlignment="Stretch" Margin="4,4,0,4" Grid.Row="5" VerticalAlignment="Stretch" Click="cancelBtn_Click"/>
     </Grid>
 </Window>

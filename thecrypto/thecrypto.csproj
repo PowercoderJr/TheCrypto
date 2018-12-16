@@ -67,8 +67,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AutoGreyableImage.cs" />
+    <Compile Include="IsMailboxSelectedValueConverter.cs" />
     <Compile Include="Send_box.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="WriteLetterWindow.xaml.cs">
+      <DependentUpon>WriteLetterWindow.xaml</DependentUpon>
+    </Compile>
     <Page Include="AuthWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -85,6 +90,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MainWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WriteLetterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -147,6 +156,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\remove.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SmithHtmlEditor\SmithHtmlEditor.csproj">
+      <Project>{84badda1-ab3a-4064-b87e-178d7446901d}</Project>
+      <Name>SmithHtmlEditor</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

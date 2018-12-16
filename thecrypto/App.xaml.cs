@@ -13,5 +13,6 @@ namespace thecrypto
     /// </summary>
     public partial class App : Application
     {
+        public const string HTML_CHARSET = "utf-8";
     }
 }

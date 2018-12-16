@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,7 +19,7 @@ namespace thecrypto
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private static DataTemplate letterDT;
 
@@ -68,15 +69,35 @@ namespace thecrypto
         }
 
         private Account account;
+        private Mailbox currMailbox;
+        public Mailbox CurrMailbox
+        {
+            get => currMailbox;
+            set
+            {
+                currMailbox = value;
+                NotifyPropertyChanged("CurrMailbox");
+            }
+        }
         private ImapX.ImapClient imap;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        // This method is called by the Set accessor of each property.  
+        // The CallerMemberName attribute that is applied to the optional propertyName  
+        // parameter causes the property name of the caller to be substituted as an argument.  
+        private void NotifyPropertyChanged(String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         public MainWindow(Account account)
         {
             InitializeComponent();
             this.account = account;
-            nameLabel.Content = account.login;
+            this.CurrMailbox = null;
 
-            DataContext = this;
+            //DataContext = this;
+            nameLabel.Content = account.login;
             mailboxesLB.ItemsSource = this.account.mailboxes;
         }
 
@@ -129,16 +150,18 @@ namespace thecrypto
 
         private void mailboxesLB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (mailboxesLB.SelectedItem != null)
+            Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
+            if (mailbox != null)
             {
                 currEmailLabel.Content = "Выполняется подключение...";
                 lettersTV.Items.Clear();
                 fillLetterForm(null);
-                // TODO: выполнять подключение в отдельном потоке
-                if (imapConnect(mailboxesLB.SelectedItem as Mailbox))
+                // TODO: выполнять подключение и загрузку писем в отдельном потоке
+                if (imapConnect(mailbox))
                 {
                     loadLetters();
-                    currEmailLabel.Content = mailboxesLB.SelectedItem;
+                    this.CurrMailbox = mailbox;
+                    currEmailLabel.Content = mailbox;
                 }
                 else
                 {
@@ -171,6 +194,8 @@ namespace thecrypto
 
         public void loadLetters()
         {
+            // TEMP: загружать письма с MessageFetchMode.Tiny, дозагружать с MessageFetchMode.Full перед чтением
+            imap.Behavior.MessageFetchMode = ImapX.Enums.MessageFetchMode.Full;
             foreach (ImapX.Folder folder in imap.Folders)
                 refreshFolder(folder, lettersTV.Items);
         }
@@ -196,8 +221,10 @@ namespace thecrypto
 
         private void lettersTV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (lettersTV.SelectedItem != null && lettersTV.SelectedItem is ImapX.Message)
-                fillLetterForm(lettersTV.SelectedItem as ImapX.Message);
+            ImapX.Message message = lettersTV.SelectedItem as ImapX.Message;
+            if (message != null)
+                // if (message.Download(ImapX.Enums.MessageFetchMode.Full))
+                    fillLetterForm(message);
         }
 
         private void fillLetterForm(ImapX.Message message)
@@ -209,7 +236,7 @@ namespace thecrypto
                 encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = null;
                 signatureStatusLabel.Content = signatureStatusLabel.ToolTip = null;
                 letterWB.NavigateToString("<html></html>");
-                attachmentsPanel.Children.Clear();
+                attachmentsPanel.Items.Clear();
                 replyBtn.IsEnabled = false;
             }
             else
@@ -227,23 +254,36 @@ namespace thecrypto
                 signatureStatusLabel.Content = signatureStatusLabel.ToolTip = "World";
 
                 string body = message.Body.Html;
-                body = body.Insert(body.IndexOf("<html>", StringComparison.OrdinalIgnoreCase) + 6, "<meta charset=\"utf-8\">");
+                int index = body.IndexOf("<html>", StringComparison.OrdinalIgnoreCase);
+                if (index < 0)
+                    body = "<html><meta charset=\"utf-8\">" + body + "</html>";
+                else
+                    body = body.Insert(index + 6, "<meta charset=\"" + App.HTML_CHARSET + "\">");
                 letterWB.NavigateToString(body);
 
-                attachmentsPanel.Children.Clear();
+                attachmentsPanel.Items.Clear();
                 foreach (ImapX.Attachment attachment in message.Attachments)
-                {
-                    TextBlock textBlock = new TextBlock();
-                    textBlock.Text = attachment.FileName;
-                    textBlock.Foreground = Brushes.MidnightBlue;
-                    textBlock.TextDecorations = TextDecorations.Underline;
-                    textBlock.Margin = new Thickness(0, 0, 4, 0);
-                    textBlock.Cursor = Cursors.Hand;
-                    textBlock.MouseLeftButtonUp += (s,e) => MessageBox.Show(attachment.FileName);
-                    attachmentsPanel.Children.Add(textBlock);
-                }
+                    attachmentsPanel.Items.Add(attachment);
                 replyBtn.IsEnabled = true;
             }
+        }
+
+        private void attachment_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ImapX.Attachment attachment = (sender as TextBlock).DataContext as ImapX.Attachment;
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Title = "Сохранить файл...";
+            sfd.FileName = attachment.FileName;
+            if (sfd.ShowDialog(this).Value)
+                attachment.Save(System.IO.Path.GetDirectoryName(sfd.FileName), System.IO.Path.GetFileName(sfd.FileName));
+        }
+
+        private void letterBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            WriteLetterWindow wlw = new WriteLetterWindow();
+            wlw.senderNameTB.Text = CurrMailbox.Name;
+            wlw.sendetAddressTB.Text = "<" + CurrMailbox.Address + ">";
+            wlw.Show();
         }
     }
 }

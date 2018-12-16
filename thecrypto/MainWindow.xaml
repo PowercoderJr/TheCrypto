@@ -9,7 +9,8 @@
     <DockPanel LastChildFill="True">
         <DockPanel Width="250" DockPanel.Dock="Left">
             <DockPanel.Resources>
-                <Style TargetType="Image" BasedOn="{StaticResource clickableImage}"/>
+                <Style TargetType="local:AutoGreyableImage" BasedOn="{StaticResource clickableImage}"/>
+                <local:IsMailboxSelectedValueConverter x:Key="IsMailboxSelectedVC"/>
             </DockPanel.Resources>
             <Label x:Name="nameLabel" DockPanel.Dock="Top" Content=" " Margin="10,10,10,0" VerticalAlignment="Top"/>
             <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="10,0,10,10" Height="48">
@@ -25,11 +26,11 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <Image Name="letterBtn" ToolTip="Написать письмо" Grid.Column="0" Source="Resources/letter.png"/>
-                <Image Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png"/>
-                <Image Name="mailbookhBtn" ToolTip="Адресная книга" Grid.Column="2" Source="Resources/mailbook.png"/>
-                <Image Name="settingsBtn" ToolTip="Настройки" Grid.Column="3" Source="Resources/settings.png"/>
-                <Image Name="logoutBtn" ToolTip="Выйти из аккаунта" Grid.Column="4" Source="Resources/logout.png"/>
+                <local:AutoGreyableImage x:Name="letterBtn" ToolTip="Написать письмо" Grid.Column="0" Source="Resources/letter.png" MouseLeftButtonUp="letterBtn_MouseLeftButtonUp" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="mailbookhBtn" ToolTip="Адресная книга" Grid.Column="2" Source="Resources/mailbook.png"/>
+                <local:AutoGreyableImage x:Name="settingsBtn" ToolTip="Настройки" Grid.Column="3" Source="Resources/settings.png"/>
+                <local:AutoGreyableImage x:Name="logoutBtn" ToolTip="Выйти из аккаунта" Grid.Column="4" Source="Resources/logout.png"/>
             </Grid>
             <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="10" Height="32">
                 <Grid.ColumnDefinitions>
@@ -37,9 +38,9 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <Image Name="addMailboxBtn" ToolTip="Добавить почтовый ящик" Grid.Column="0" Source="Resources/add.png" MouseLeftButtonUp="addMailboxBtn_MouseLeftButtonUp"/>
-                <Image Name="editMailboxBtn" ToolTip="Изменить почтовый ящик" Grid.Column="1" Source="Resources/edit.png" MouseLeftButtonUp="editMailboxBtn_MouseLeftButtonUp"/>
-                <Image Name="removeMailboxBtn" ToolTip="Удалить почтовый ящик" Grid.Column="2" Source="Resources/remove.png" MouseLeftButtonUp="removeMailboxBtn_MouseLeftButtonUp"/>
+                <local:AutoGreyableImage x:Name="addMailboxBtn" ToolTip="Добавить почтовый ящик" Grid.Column="0" Source="Resources/add.png" MouseLeftButtonUp="addMailboxBtn_MouseLeftButtonUp"/>
+                <local:AutoGreyableImage x:Name="editMailboxBtn" ToolTip="Изменить почтовый ящик" Grid.Column="1" Source="Resources/edit.png" MouseLeftButtonUp="editMailboxBtn_MouseLeftButtonUp" IsEnabled="{Binding ElementName=mailboxesLB, Path=SelectedItem, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="removeMailboxBtn" ToolTip="Удалить почтовый ящик" Grid.Column="2" Source="Resources/remove.png" MouseLeftButtonUp="removeMailboxBtn_MouseLeftButtonUp" IsEnabled="{Binding ElementName=mailboxesLB, Path=SelectedItem, Converter={StaticResource IsMailboxSelectedVC}}"/>
             </Grid>
             <ListBox x:Name="mailboxesLB" HorizontalAlignment="Stretch" Margin="10,0" VerticalAlignment="Stretch" MouseDoubleClick="mailboxesLB_MouseDoubleClick"/>
         </DockPanel>
@@ -52,7 +53,18 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="replyBtn" Content="Ответить" IsEnabled="False"/>
-                <WrapPanel x:Name="attachmentsPanel" Grid.Column="1" Margin="10,0,0,0"/>
+                <ItemsControl x:Name="attachmentsPanel"  Grid.Column="1" Margin="10,0,0,0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding FileName}" Foreground="#FF1A0DAB" TextDecorations="Underline" Margin="0,0,4,0" Cursor="Hand" MouseLeftButtonUp="attachment_MouseLeftButtonUp" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
             </Grid>
             <DockPanel Margin="10">
                 <Grid DockPanel.Dock="Top">
