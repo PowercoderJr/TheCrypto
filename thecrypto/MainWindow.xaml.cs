@@ -30,7 +30,7 @@ namespace thecrypto
             spFactory.SetValue(StackPanel.OrientationProperty, Orientation.Horizontal);
 
             var senderTbFactory = new FrameworkElementFactory(typeof(TextBlock));
-            senderTbFactory.SetValue(TextBlock.TextProperty, new Binding("From.DisplayName"));
+            senderTbFactory.SetBinding(TextBlock.TextProperty, new Binding("From.DisplayName"));
             spFactory.AppendChild(senderTbFactory);
 
             var sep1TbFactory = new FrameworkElementFactory(typeof(TextBlock));
@@ -38,7 +38,7 @@ namespace thecrypto
             spFactory.AppendChild(sep1TbFactory);
 
             var receiverTbFactory = new FrameworkElementFactory(typeof(TextBlock));
-            receiverTbFactory.SetValue(TextBlock.TextProperty, new Binding("To[0].Address"));
+            receiverTbFactory.SetBinding(TextBlock.TextProperty, new Binding("To[0].Address"));
             spFactory.AppendChild(receiverTbFactory);
 
             var sep2TbFactory = new FrameworkElementFactory(typeof(TextBlock));
@@ -46,15 +46,17 @@ namespace thecrypto
             spFactory.AppendChild(sep2TbFactory);
 
             var subjectTbFactory = new FrameworkElementFactory(typeof(TextBlock));
-            subjectTbFactory.SetValue(TextBlock.TextProperty, new Binding("Subject"));
+            subjectTbFactory.SetBinding(TextBlock.TextProperty, new Binding("Subject"));
             spFactory.AppendChild(subjectTbFactory);
+
+            // TODO: установить триггер "прочитано-не прочитано"
 
             var sep3TbFactory = new FrameworkElementFactory(typeof(TextBlock));
             sep3TbFactory.SetValue(TextBlock.TextProperty, " (");
             spFactory.AppendChild(sep3TbFactory);
 
             var datetimeTbFactory = new FrameworkElementFactory(typeof(TextBlock));
-            datetimeTbFactory.SetValue(TextBlock.TextProperty, new Binding("Date"));
+            datetimeTbFactory.SetBinding(TextBlock.TextProperty, new Binding("Date"));
             spFactory.AppendChild(datetimeTbFactory);
 
             var sep4TbFactory = new FrameworkElementFactory(typeof(TextBlock));
@@ -84,7 +86,7 @@ namespace thecrypto
             if (mw.ShowDialog().Value)
             {
                 string address = mw.addressTB.Text.Trim();
-                if (account.mailboxes.Any(item => item.address.Equals(address)))
+                if (account.mailboxes.Any(item => item.Address.Equals(address)))
                     Utils.showWarning(address + " уже есть в списке почтовых ящиков");
                 else
                 {
@@ -98,7 +100,7 @@ namespace thecrypto
         {
             if (mailboxesLB.SelectedItem != null)
             {
-                Mailbox mailbox = (Mailbox)mailboxesLB.SelectedItem;
+                Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
                 MailboxWindow mw = new MailboxWindow(mailbox);
                 if (mw.ShowDialog().Value)
                 {
@@ -131,8 +133,9 @@ namespace thecrypto
             {
                 currEmailLabel.Content = "Выполняется подключение...";
                 lettersTV.Items.Clear();
+                fillLetterForm(null);
                 // TODO: выполнять подключение в отдельном потоке
-                if (imapConnect((Mailbox)mailboxesLB.SelectedItem))
+                if (imapConnect(mailboxesLB.SelectedItem as Mailbox))
                 {
                     loadLetters();
                     currEmailLabel.Content = mailboxesLB.SelectedItem;
@@ -148,12 +151,12 @@ namespace thecrypto
         {
             if (imap != null && imap.IsConnected)
                 imap.Disconnect();
-            imap = new ImapX.ImapClient(mailbox.imapDomain, mailbox.imapPort, account.useSsl);
+            imap = new ImapX.ImapClient(mailbox.ImapDomain, mailbox.ImapPort, account.useSsl);
             if (imap.Connect())
                 try
                 {
-                    if (!imap.Login(mailbox.address, mailbox.password))
-                        Utils.showWarning("Не удалось выполнить вход в " + mailbox.address + ". Проверьте правильность адреса и пароля.");
+                    if (!imap.Login(mailbox.Address, mailbox.Password))
+                        Utils.showWarning("Не удалось выполнить вход в " + mailbox.Address + ". Проверьте правильность адреса и пароля.");
                     else
                         return true;
                 }
@@ -188,6 +191,58 @@ namespace thecrypto
                     twi.Items.Add(message);
 
                 collection.Add(twi);
+            }
+        }
+
+        private void lettersTV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (lettersTV.SelectedItem != null && lettersTV.SelectedItem is ImapX.Message)
+                fillLetterForm(lettersTV.SelectedItem as ImapX.Message);
+        }
+
+        private void fillLetterForm(ImapX.Message message)
+        {
+            if (message == null)
+            {
+                fromToDatetimeLabel.Content = fromToDatetimeLabel.ToolTip = null;
+                subjectLabel.Content = subjectLabel.ToolTip = null;
+                encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = null;
+                signatureStatusLabel.Content = signatureStatusLabel.ToolTip = null;
+                letterWB.NavigateToString("<html></html>");
+                attachmentsPanel.Children.Clear();
+                replyBtn.IsEnabled = false;
+            }
+            else
+            {
+                StringBuilder fromToDatetime = new StringBuilder(message.Date + 
+                        " от " + message.From.DisplayName + 
+                        " <" + message.From.Address + "> для ");
+                foreach (ImapX.MailAddress receiver in message.To)
+                    fromToDatetime.Append(receiver.DisplayName +
+                        " <" + receiver.Address + ">, ");
+                fromToDatetime.Remove(fromToDatetime.Length - 2, 2);
+                fromToDatetimeLabel.Content = fromToDatetimeLabel.ToolTip = fromToDatetime;
+                subjectLabel.Content = subjectLabel.ToolTip = message.Subject;
+                encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = "Hello";
+                signatureStatusLabel.Content = signatureStatusLabel.ToolTip = "World";
+
+                string body = message.Body.Html;
+                body = body.Insert(body.IndexOf("<html>", StringComparison.OrdinalIgnoreCase) + 6, "<meta charset=\"utf-8\">");
+                letterWB.NavigateToString(body);
+
+                attachmentsPanel.Children.Clear();
+                foreach (ImapX.Attachment attachment in message.Attachments)
+                {
+                    TextBlock textBlock = new TextBlock();
+                    textBlock.Text = attachment.FileName;
+                    textBlock.Foreground = Brushes.MidnightBlue;
+                    textBlock.TextDecorations = TextDecorations.Underline;
+                    textBlock.Margin = new Thickness(0, 0, 4, 0);
+                    textBlock.Cursor = Cursors.Hand;
+                    textBlock.MouseLeftButtonUp += (s,e) => MessageBox.Show(attachment.FileName);
+                    attachmentsPanel.Children.Add(textBlock);
+                }
+                replyBtn.IsEnabled = true;
             }
         }
     }

@@ -22,13 +22,13 @@ namespace thecrypto
         public MailboxWindow(Mailbox mailbox)
         {
             InitializeComponent();
-            nameTB.Text = mailbox.name;
-            addressTB.Text = mailbox.address;
-            smtpDomainTB.Text = mailbox.smtpDomain;
-            smtpPortTB.Text = mailbox.smtpPort.ToString();
+            nameTB.Text = mailbox.Name;
+            addressTB.Text = mailbox.Address;
+            smtpDomainTB.Text = mailbox.SmtpDomain;
+            smtpPortTB.Text = mailbox.SmtpPort.ToString();
             smtpAutosetChB.IsChecked = false;
-            imapDomainTB.Text = mailbox.imapDomain;
-            imapPortTB.Text = mailbox.imapPort.ToString();
+            imapDomainTB.Text = mailbox.ImapDomain;
+            imapPortTB.Text = mailbox.ImapPort.ToString();
             imapAutosetChB.IsChecked = false;
         }
 

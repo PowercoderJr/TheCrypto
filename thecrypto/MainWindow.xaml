@@ -5,13 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:thecrypto"
         mc:Ignorable="d"
-        Title="The Crypto" Height="450" Width="800">
+        Title="The Crypto" Height="700" Width="1000">
     <DockPanel LastChildFill="True">
         <DockPanel Width="250" DockPanel.Dock="Left">
             <DockPanel.Resources>
                 <Style TargetType="Image" BasedOn="{StaticResource clickableImage}"/>
             </DockPanel.Resources>
-            <Label x:Name="nameLabel" DockPanel.Dock="Top" Content="Name" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+            <Label x:Name="nameLabel" DockPanel.Dock="Top" Content=" " Margin="10,10,10,0" VerticalAlignment="Top"/>
             <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="10,0,10,10" Height="48">
                 <Grid.Resources>
                     <Style TargetType="Image" BasedOn="{StaticResource clickableImage}">
@@ -25,11 +25,11 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <Image Name="letterBtn" Grid.Column="0" Source="Resources/letter.png"/>
-                <Image Name="refreshBtn" Grid.Column="1" Source="Resources/refresh.png"/>
-                <Image Name="mailbookhBtn" Grid.Column="2" Source="Resources/mailbook.png"/>
-                <Image Name="settingsBtn" Grid.Column="3" Source="Resources/settings.png"/>
-                <Image Name="logoutBtn" Grid.Column="4" Source="Resources/logout.png"/>
+                <Image Name="letterBtn" ToolTip="Написать письмо" Grid.Column="0" Source="Resources/letter.png"/>
+                <Image Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png"/>
+                <Image Name="mailbookhBtn" ToolTip="Адресная книга" Grid.Column="2" Source="Resources/mailbook.png"/>
+                <Image Name="settingsBtn" ToolTip="Настройки" Grid.Column="3" Source="Resources/settings.png"/>
+                <Image Name="logoutBtn" ToolTip="Выйти из аккаунта" Grid.Column="4" Source="Resources/logout.png"/>
             </Grid>
             <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="10" Height="32">
                 <Grid.ColumnDefinitions>
@@ -37,16 +37,48 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <Image Name="addMailboxBtn" Grid.Column="0" Source="Resources/add.png" MouseLeftButtonUp="addMailboxBtn_MouseLeftButtonUp"/>
-                <Image Name="editMailboxBtn" Grid.Column="1" Source="Resources/edit.png" MouseLeftButtonUp="editMailboxBtn_MouseLeftButtonUp"/>
-                <Image Name="removeMailboxBtn" Grid.Column="2" Source="Resources/remove.png" MouseLeftButtonUp="removeMailboxBtn_MouseLeftButtonUp"/>
+                <Image Name="addMailboxBtn" ToolTip="Добавить почтовый ящик" Grid.Column="0" Source="Resources/add.png" MouseLeftButtonUp="addMailboxBtn_MouseLeftButtonUp"/>
+                <Image Name="editMailboxBtn" ToolTip="Изменить почтовый ящик" Grid.Column="1" Source="Resources/edit.png" MouseLeftButtonUp="editMailboxBtn_MouseLeftButtonUp"/>
+                <Image Name="removeMailboxBtn" ToolTip="Удалить почтовый ящик" Grid.Column="2" Source="Resources/remove.png" MouseLeftButtonUp="removeMailboxBtn_MouseLeftButtonUp"/>
             </Grid>
             <ListBox x:Name="mailboxesLB" HorizontalAlignment="Stretch" Margin="10,0" VerticalAlignment="Stretch" MouseDoubleClick="mailboxesLB_MouseDoubleClick"/>
         </DockPanel>
         <DockPanel>
-            <Label x:Name="currEmailLabel" DockPanel.Dock="Top" Content="CurrEmail" VerticalAlignment="Top" Margin="10,10,10,0"/>
-            <TreeView x:Name="lettersTV" DockPanel.Dock="Top" Height="120" Margin="10,0"/>
-            <WebBrowser Margin="10,10"/>
+            <Label x:Name="currEmailLabel" DockPanel.Dock="Top" Content=" " VerticalAlignment="Top" Margin="10,10,10,0"/>
+            <TreeView x:Name="lettersTV" DockPanel.Dock="Top" Height="200" Margin="10,0" MouseDoubleClick="lettersTV_MouseDoubleClick"/>
+            <Grid DockPanel.Dock="Bottom" Margin="10,0,10,10" MinHeight="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Button x:Name="replyBtn" Content="Ответить" IsEnabled="False"/>
+                <WrapPanel x:Name="attachmentsPanel" Grid.Column="1" Margin="10,0,0,0"/>
+            </Grid>
+            <DockPanel Margin="10">
+                <Grid DockPanel.Dock="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100" />
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label Content="Отправка:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" x:Name="fromToDatetimeLabel" Content=" " VerticalAlignment="Center"/>
+                    <Label Grid.Row="1" Content="Тема:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Grid.Row="1" Grid.Column="1" x:Name="subjectLabel" Content=" " VerticalAlignment="Center"/>
+                    <Label Grid.Row="2" Content="Подпись:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Grid.Row="2" Grid.Column="1" x:Name="signatureStatusLabel" Content=" " VerticalAlignment="Center"/>
+                    <Label Grid.Row="3" Content="Шифрование:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <Label Grid.Row="3" Grid.Column="1" x:Name="encryptionStatusLabel" Content=" " VerticalAlignment="Center"/>
+                </Grid>
+                <WebBrowser x:Name="letterWB"/>
+            </DockPanel>
         </DockPanel>
+
     </DockPanel>
 </Window>

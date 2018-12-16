@@ -12,35 +12,35 @@ namespace thecrypto
     public class Mailbox
     {
 
-        internal string name;
-        internal string address;
-        internal string password;
-        internal string smtpDomain;
-        internal int smtpPort;
-        internal string imapDomain;
-        internal int imapPort;
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string Password { get; set; }
+        public string SmtpDomain { get; set; }
+        public int SmtpPort { get; set; }
+        public string ImapDomain { get; set; }
+        public int ImapPort { get; set; }
 
         //internal ObservableCollection<Send_box> send_adresses = new ObservableCollection<Send_box>();
 
         public Mailbox(string name, string address, string password)
         {
-            this.name = name;
-            this.address = address;
-            this.password = password;
+            this.Name = name;
+            this.Address = address;
+            this.Password = password;
         }
 
         public void setSmtpServer(string domain, int port)
         {
-            this.smtpDomain = domain;
-            this.smtpPort = port;
+            this.SmtpDomain = domain;
+            this.SmtpPort = port;
         }
 
         public void setImapServer(string domain, int port)
         {
-            this.imapDomain = domain;
-            this.imapPort = port;
+            this.ImapDomain = domain;
+            this.ImapPort = port;
         }
 
-        public override string ToString() => name + " <" + address + ">";
+        public override string ToString() => Name + " <" + Address + ">";
     }
 }
