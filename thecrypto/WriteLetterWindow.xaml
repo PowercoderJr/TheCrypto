@@ -6,10 +6,12 @@
         xmlns:ex="clr-namespace:Smith.WPF.HtmlEditor;assembly=Smith.WPF.HtmlEditor"
         xmlns:local="clr-namespace:thecrypto"
         mc:Ignorable="d"
-        Title="The Crypto - Отправить письмо" Height="450" Width="800">
+        Title="The Crypto - Отправить письмо" Height="650" Width="800">
     <DockPanel>
         <Grid DockPanel.Dock="Top" Margin="8">
             <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="30"/>
@@ -28,19 +30,44 @@
             </DockPanel>
             <Label Grid.Row="1" Content="Получатели:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
             <TextBox Grid.Row="1" Grid.Column="1" x:Name="recipientsTB"/>
-            <Label Grid.Row="2" Content="Тема:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="2" Grid.Column="1" x:Name="subjectTB"/>
-            <Label Grid.Row="3" Content="Подпись:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <Label Grid.Row="4" Content="Шифрование:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <Label Grid.Row="2" Content="Копии:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="recipientsCcTB"/>
+            <Label Grid.Row="3" Content="Скрытые копии:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="recipientsBccTB"/>
+            <Label Grid.Row="4" Content="Тема:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="subjectTB"/>
+            <Label Grid.Row="5" Content="Подпись:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <Label Grid.Row="6" Content="Шифрование:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
         </Grid>
-        <Border DockPanel.Dock="Bottom" BorderBrush="#FFC5C5C5" BorderThickness="0,1,0,0" Padding="8">
-            <DockPanel>
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Height="30">
-                    <Button x:Name="GetTextButton" Content="Отправить" VerticalAlignment="Stretch"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal"/>
-            </DockPanel>
+        <Border DockPanel.Dock="Bottom" BorderBrush="#FF828790" BorderThickness="0,1,0,0" Padding="8">
+            <Grid MinHeight="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="120"/>
+                </Grid.ColumnDefinitions>
+                <ItemsControl x:Name="attachmentsPanel">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                                <StackPanel.Resources>
+                                    <Style TargetType="local:AutoGreyableImage" BasedOn="{StaticResource clickableImage}"/>
+                                </StackPanel.Resources>
+                                <TextBlock Text="{Binding FileName}"/>
+                                <local:AutoGreyableImage Source="Resources/remove_small.png" MouseLeftButtonUp="removeAttachmentBtn_MouseLeftButtonUp" Width="16" Height="16" Margin="2,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <Button x:Name="attachBtn" Grid.Column="1" Content="Прикрепить файл" VerticalAlignment="Stretch" Margin="4,0,0,0" Click="attachBtn_Click"/>
+                <Button x:Name="sendBtn" Grid.Column="2" Content="Отправить" VerticalAlignment="Stretch" Margin="4,0,0,0" Click="sendBtn_Click"/>
+            </Grid>
         </Border>
-        <ex:HtmlEditor x:Name="Editor" />
+        <ex:HtmlEditor x:Name="bodyHtmlEditor" />
     </DockPanel>
 </Window>

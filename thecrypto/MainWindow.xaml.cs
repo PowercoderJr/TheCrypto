@@ -79,6 +79,16 @@ namespace thecrypto
                 NotifyPropertyChanged("CurrMailbox");
             }
         }
+        private ImapX.Message currMessage;
+        public ImapX.Message CurrMessage
+        {
+            get => currMessage;
+            set
+            {
+                currMessage = value;
+                NotifyPropertyChanged("CurrMessage");
+            }
+        }
         private ImapX.ImapClient imap;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -104,6 +114,7 @@ namespace thecrypto
         private void addMailboxBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             MailboxWindow mw = new MailboxWindow();
+            mw.Owner = this;
             if (mw.ShowDialog().Value)
             {
                 string address = mw.addressTB.Text.Trim();
@@ -123,12 +134,14 @@ namespace thecrypto
             {
                 Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
                 MailboxWindow mw = new MailboxWindow(mailbox);
+                mw.Owner = this;
                 if (mw.ShowDialog().Value)
                 {
                     int index = mailboxesLB.SelectedIndex;
                     // TEMP: иначе не обновляется элемент в листбоксе
                     account.mailboxes.RemoveAt(index);
                     account.mailboxes.Insert(index, mw.mailbox);
+                    mailboxesLB.SelectedIndex = index;
                     // TEMP/
                     account.Serialize();
                 }
@@ -137,43 +150,56 @@ namespace thecrypto
 
         private void removeMailboxBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (mailboxesLB.SelectedItem != null)
+            // TODO: закрыть текущий ящик, если его удалили
+            Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
+            if (mailbox != null)
             {
                 if (Utils.showConfirmation("Вы действительно хотите удалить " + mailboxesLB.SelectedItem +
                     " из списка почтовых ящиков?") == MessageBoxResult.Yes)
                 {
                     account.mailboxes.RemoveAt(mailboxesLB.SelectedIndex);
                     account.Serialize();
+
+                    if (mailbox == CurrMailbox)
+                    {
+                        currEmailLabel.Content = null;
+                        lettersTV.Items.Clear();
+                        fillLetterForm(null);
+                        CurrMailbox = null;
+                    }
                 }
             }
+        }
+
+        private void checkoutMailbox(Mailbox mailbox)
+        {
+            currEmailLabel.Content = "Выполняется подключение...";
+            lettersTV.Items.Clear();
+            fillLetterForm(null);
+            // TODO: выполнять подключение и загрузку писем в отдельном потоке
+            if (imapConnect(mailbox))
+            {
+                loadLetters();
+                this.CurrMailbox = mailbox;
+                currEmailLabel.Content = mailbox;
+            }
+            else
+            {
+                currEmailLabel.Content = "";
+            }
+
         }
 
         private void mailboxesLB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
             if (mailbox != null)
-            {
-                currEmailLabel.Content = "Выполняется подключение...";
-                lettersTV.Items.Clear();
-                fillLetterForm(null);
-                // TODO: выполнять подключение и загрузку писем в отдельном потоке
-                if (imapConnect(mailbox))
-                {
-                    loadLetters();
-                    this.CurrMailbox = mailbox;
-                    currEmailLabel.Content = mailbox;
-                }
-                else
-                {
-                    currEmailLabel.Content = "";
-                }
-            }
+                checkoutMailbox(mailbox);
         }
 
         private bool imapConnect(Mailbox mailbox)
         {
-            if (imap != null && imap.IsConnected)
-                imap.Disconnect();
+            disposeImap();
             imap = new ImapX.ImapClient(mailbox.ImapDomain, mailbox.ImapPort, account.useSsl);
             if (imap.Connect())
                 try
@@ -229,6 +255,7 @@ namespace thecrypto
 
         private void fillLetterForm(ImapX.Message message)
         {
+            CurrMessage = message;
             if (message == null)
             {
                 fromToDatetimeLabel.Content = fromToDatetimeLabel.ToolTip = null;
@@ -248,6 +275,14 @@ namespace thecrypto
                     fromToDatetime.Append(receiver.DisplayName +
                         " <" + receiver.Address + ">, ");
                 fromToDatetime.Remove(fromToDatetime.Length - 2, 2);
+                if (message.Cc.Count > 0)
+                {
+                    fromToDatetime.Append("; Копии: ");
+                    foreach (ImapX.MailAddress receiver in message.Cc)
+                        fromToDatetime.Append(receiver.DisplayName +
+                            " <" + receiver.Address + ">, ");
+                    fromToDatetime.Remove(fromToDatetime.Length - 2, 2);
+                }
                 fromToDatetimeLabel.Content = fromToDatetimeLabel.ToolTip = fromToDatetime;
                 subjectLabel.Content = subjectLabel.ToolTip = message.Subject;
                 encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = "Hello";
@@ -256,7 +291,7 @@ namespace thecrypto
                 string body = message.Body.Html;
                 int index = body.IndexOf("<html>", StringComparison.OrdinalIgnoreCase);
                 if (index < 0)
-                    body = "<html><meta charset=\"utf-8\">" + body + "</html>";
+                    body = "<html><meta charset=\"utf-8\"><body>" + body + "</body></html>";
                 else
                     body = body.Insert(index + 6, "<meta charset=\"" + App.HTML_CHARSET + "\">");
                 letterWB.NavigateToString(body);
@@ -270,7 +305,7 @@ namespace thecrypto
 
         private void attachment_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            ImapX.Attachment attachment = (sender as TextBlock).DataContext as ImapX.Attachment;
+            ImapX.Attachment attachment = (sender as FrameworkElement).DataContext as ImapX.Attachment;
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Title = "Сохранить файл...";
             sfd.FileName = attachment.FileName;
@@ -280,10 +315,44 @@ namespace thecrypto
 
         private void letterBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            WriteLetterWindow wlw = new WriteLetterWindow();
-            wlw.senderNameTB.Text = CurrMailbox.Name;
-            wlw.sendetAddressTB.Text = "<" + CurrMailbox.Address + ">";
+            WriteLetterWindow wlw = new WriteLetterWindow(CurrMailbox, account.useSsl);
+            wlw.Owner = this;
             wlw.Show();
+        }
+
+        private void refreshBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            checkoutMailbox(CurrMailbox);
+        }
+
+        private void replyBtn_Click(object sender, RoutedEventArgs e)
+        {
+            WriteLetterWindow wlw = new WriteLetterWindow(CurrMailbox, account.useSsl);
+            wlw.subjectTB.Text = CurrMessage.Subject;
+            StringBuilder replyTo = new StringBuilder(CurrMessage.From.Address + ", ");
+            foreach (ImapX.MailAddress receiver in CurrMessage.To)
+                if (!receiver.Address.Equals(CurrMailbox.Address) &&
+                        !receiver.Address.Equals(CurrMessage.From.Address))
+                    replyTo.Append(receiver.Address + ", ");
+            replyTo.Remove(replyTo.Length - 2, 2);
+            wlw.recipientsTB.Text = replyTo.ToString();
+            wlw.Owner = this;
+            wlw.Show();
+        }
+
+        private void disposeImap()
+        {
+            if (imap != null)
+            {
+                if (imap.IsConnected)
+                    imap.Disconnect();
+                imap.Dispose();
+            }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            disposeImap();
         }
     }
 }

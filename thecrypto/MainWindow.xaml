@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:thecrypto"
         mc:Ignorable="d"
-        Title="The Crypto" Height="700" Width="1000">
+        Title="The Crypto" Height="700" Width="1000" Closing="Window_Closing">
     <DockPanel LastChildFill="True">
-        <DockPanel Width="250" DockPanel.Dock="Left">
+        <DockPanel Width="275" DockPanel.Dock="Left">
             <DockPanel.Resources>
                 <Style TargetType="local:AutoGreyableImage" BasedOn="{StaticResource clickableImage}"/>
                 <local:IsMailboxSelectedValueConverter x:Key="IsMailboxSelectedVC"/>
@@ -27,7 +27,7 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
                 <local:AutoGreyableImage x:Name="letterBtn" ToolTip="Написать письмо" Grid.Column="0" Source="Resources/letter.png" MouseLeftButtonUp="letterBtn_MouseLeftButtonUp" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
-                <local:AutoGreyableImage x:Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}" MouseLeftButtonUp="refreshBtn_MouseLeftButtonUp"/>
                 <local:AutoGreyableImage x:Name="mailbookhBtn" ToolTip="Адресная книга" Grid.Column="2" Source="Resources/mailbook.png"/>
                 <local:AutoGreyableImage x:Name="settingsBtn" ToolTip="Настройки" Grid.Column="3" Source="Resources/settings.png"/>
                 <local:AutoGreyableImage x:Name="logoutBtn" ToolTip="Выйти из аккаунта" Grid.Column="4" Source="Resources/logout.png"/>
@@ -49,11 +49,10 @@
             <TreeView x:Name="lettersTV" DockPanel.Dock="Top" Height="200" Margin="10,0" MouseDoubleClick="lettersTV_MouseDoubleClick"/>
             <Grid DockPanel.Dock="Bottom" Margin="10,0,10,10" MinHeight="32">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="replyBtn" Content="Ответить" IsEnabled="False"/>
-                <ItemsControl x:Name="attachmentsPanel"  Grid.Column="1" Margin="10,0,0,0">
+                <ItemsControl x:Name="attachmentsPanel" Margin="10,0,0,0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding FileName}" Foreground="#FF1A0DAB" TextDecorations="Underline" Margin="0,0,4,0" Cursor="Hand" MouseLeftButtonUp="attachment_MouseLeftButtonUp" />
@@ -65,6 +64,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                 </ItemsControl>
+                <Button x:Name="replyBtn" Grid.Column="1" Content="Ответить" IsEnabled="False" Click="replyBtn_Click"/>
             </Grid>
             <DockPanel Margin="10">
                 <Grid DockPanel.Dock="Top">
@@ -88,7 +88,9 @@
                     <Label Grid.Row="3" Content="Шифрование:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                     <Label Grid.Row="3" Grid.Column="1" x:Name="encryptionStatusLabel" Content=" " VerticalAlignment="Center"/>
                 </Grid>
-                <WebBrowser x:Name="letterWB"/>
+                <Border DockPanel.Dock="Bottom" BorderBrush="#FF828790" BorderThickness="1">
+                    <WebBrowser x:Name="letterWB"/>
+                </Border>
             </DockPanel>
         </DockPanel>
 

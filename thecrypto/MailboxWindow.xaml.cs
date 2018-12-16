@@ -15,13 +15,15 @@ namespace thecrypto
         public MailboxWindow(string name="", string address="")
         {
             InitializeComponent();
-            nameTB.Text = name;
-            addressTB.Text = address;
+            this.mailbox = new Mailbox(name, address, "");
+            nameTB.Text = mailbox.Name;
+            addressTB.Text = mailbox.Address;
         }
 
         public MailboxWindow(Mailbox mailbox)
         {
             InitializeComponent();
+            this.mailbox = mailbox;
             nameTB.Text = mailbox.Name;
             addressTB.Text = mailbox.Address;
             smtpDomainTB.Text = mailbox.SmtpDomain;
@@ -47,7 +49,7 @@ namespace thecrypto
             {
                 string server = getServerByEmail(address);
                 smtpDomainTB.Text = SMTP_SUBDOMAIN + server;
-                smtpPortTB.Text = "465";
+                smtpPortTB.Text = "587";
             }
 
             if (imapAutosetChB.IsChecked.Value)
@@ -65,7 +67,9 @@ namespace thecrypto
                 return;
             }
 
-            this.mailbox = new Mailbox(name, address, passTB.Password);
+            this.mailbox.Name = name;
+            this.mailbox.Address = address;
+            this.mailbox.Password = passTB.Password;
             try
             {
                 this.mailbox.setSmtpServer(smtpDomainTB.Text.Trim(), int.Parse(smtpPortTB.Text.Trim()));

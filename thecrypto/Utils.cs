@@ -5,6 +5,10 @@ namespace thecrypto
 {
     public static class Utils
     {
+        public static void showError(string message)
+        {
+            MessageBox.Show(message, "Операция успешно завершена неудачей", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
         public static void showWarning(string message)
         {
             MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
