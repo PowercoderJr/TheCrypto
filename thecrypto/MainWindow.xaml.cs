@@ -221,6 +221,7 @@ namespace thecrypto
         public void loadLetters()
         {
             // TEMP: загружать письма с MessageFetchMode.Tiny, дозагружать с MessageFetchMode.Full перед чтением
+            //imap.Behavior.MessageFetchMode = ImapX.Enums.MessageFetchMode.Flags | ImapX.Enums.MessageFetchMode.Headers;
             imap.Behavior.MessageFetchMode = ImapX.Enums.MessageFetchMode.Full;
             foreach (ImapX.Folder folder in imap.Folders)
                 refreshFolder(folder, lettersTV.Items);
@@ -229,8 +230,6 @@ namespace thecrypto
         private void refreshFolder(ImapX.Folder folder, ItemCollection collection)
         {
             TreeViewItem twi = new TreeViewItem();
-            twi.Header = folder.Name;
-            twi.ItemTemplate = letterDT;
 
             foreach (ImapX.Folder subfolder in folder.SubFolders)
                 refreshFolder(subfolder, folder.Selectable ? twi.Items : lettersTV.Items);
@@ -241,6 +240,8 @@ namespace thecrypto
                 foreach (ImapX.Message message in folder.Messages)
                     twi.Items.Add(message);
 
+                twi.Header = folder.Name + (twi.Items.Count > 0 ? (" (" + twi.Items.Count + ")") : "");
+                twi.ItemTemplate = letterDT;
                 collection.Add(twi);
             }
         }
@@ -249,8 +250,11 @@ namespace thecrypto
         {
             ImapX.Message message = lettersTV.SelectedItem as ImapX.Message;
             if (message != null)
-                // if (message.Download(ImapX.Enums.MessageFetchMode.Full))
-                    fillLetterForm(message);
+            //if (message.Download(ImapX.Enums.MessageFetchMode.Full, true))
+            {
+                message.Seen = true;
+                fillLetterForm(message);
+            }
         }
 
         private void fillLetterForm(ImapX.Message message)
@@ -322,7 +326,21 @@ namespace thecrypto
 
         private void refreshBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            checkoutMailbox(CurrMailbox);
+            lettersTV.Items.Clear();
+            loadLetters();
+        }
+
+        private void keyManagerBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            KeysManagerWindow kmw = new KeysManagerWindow(account);
+            kmw.ShowDialog();
+        }
+
+        private void logoutBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            AuthWindow aw = new AuthWindow();
+            Close();
+            aw.Show();
         }
 
         private void replyBtn_Click(object sender, RoutedEventArgs e)

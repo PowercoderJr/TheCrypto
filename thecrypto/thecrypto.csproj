@@ -68,7 +68,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AutoGreyableImage.cs" />
+    <Compile Include="Cryptography.cs" />
+    <Compile Include="CryptoKey.cs" />
     <Compile Include="IsMailboxSelectedValueConverter.cs" />
+    <Compile Include="KeysManagerWindow.xaml.cs">
+      <DependentUpon>KeysManagerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Send_box.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WriteLetterWindow.xaml.cs">
@@ -85,6 +90,10 @@
     <Compile Include="AuthWindow.xaml.cs">
       <DependentUpon>AuthWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="KeysManagerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MailboxWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -165,6 +174,18 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\remove_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\signature.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\signature_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\encrypt.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\encrypt_small.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

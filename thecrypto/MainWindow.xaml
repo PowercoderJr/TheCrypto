@@ -15,22 +15,18 @@
             <Label x:Name="nameLabel" DockPanel.Dock="Top" Content=" " Margin="10,10,10,0" VerticalAlignment="Top"/>
             <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="10,0,10,10" Height="48">
                 <Grid.Resources>
-                    <Style TargetType="Image" BasedOn="{StaticResource clickableImage}">
-                        <Setter Property="Margin" Value="2"/>
-                    </Style>
+                    <Style TargetType="Image" BasedOn="{StaticResource clickableImage}"/>
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
                 <local:AutoGreyableImage x:Name="letterBtn" ToolTip="Написать письмо" Grid.Column="0" Source="Resources/letter.png" MouseLeftButtonUp="letterBtn_MouseLeftButtonUp" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
-                <local:AutoGreyableImage x:Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}" MouseLeftButtonUp="refreshBtn_MouseLeftButtonUp"/>
-                <local:AutoGreyableImage x:Name="mailbookhBtn" ToolTip="Адресная книга" Grid.Column="2" Source="Resources/mailbook.png"/>
-                <local:AutoGreyableImage x:Name="settingsBtn" ToolTip="Настройки" Grid.Column="3" Source="Resources/settings.png"/>
-                <local:AutoGreyableImage x:Name="logoutBtn" ToolTip="Выйти из аккаунта" Grid.Column="4" Source="Resources/logout.png"/>
+                <local:AutoGreyableImage x:Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png" MouseLeftButtonUp="refreshBtn_MouseLeftButtonUp" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="keyManagerBtn" ToolTip="Менеджер ключей" Grid.Column="2" Source="Resources/encrypt.png" MouseLeftButtonUp="keyManagerBtn_MouseLeftButtonUp"/>
+                <local:AutoGreyableImage x:Name="logoutBtn" ToolTip="Выйти из аккаунта" Grid.Column="3" Source="Resources/logout.png" MouseLeftButtonUp="logoutBtn_MouseLeftButtonUp"/>
             </Grid>
             <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="10" Height="32">
                 <Grid.ColumnDefinitions>
@@ -52,7 +48,7 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
-                <ItemsControl x:Name="attachmentsPanel" Margin="10,0,0,0">
+                <ItemsControl x:Name="attachmentsPanel" Margin="0,0,8,0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding FileName}" Foreground="#FF1A0DAB" TextDecorations="Underline" Margin="0,0,4,0" Cursor="Hand" MouseLeftButtonUp="attachment_MouseLeftButtonUp" />

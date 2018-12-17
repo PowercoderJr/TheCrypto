@@ -24,5 +24,13 @@ namespace thecrypto
             Regex regex = new Regex(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
             return regex.IsMatch(s);
         }
+
+        public static string byteArrayToHexString(byte[] input)
+        {
+            string output = "";
+            foreach (byte x in input)
+                output += string.Format("{0:x2}", x);
+            return output;
+        }
     }
 }

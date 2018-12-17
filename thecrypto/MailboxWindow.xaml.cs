@@ -7,8 +7,10 @@ namespace thecrypto
     /// </summary>
     public partial class MailboxWindow : Window
     {
-        public const string SMTP_SUBDOMAIN = "smtp.";
-        public const string IMAP_SUBDOMAIN = "imap.";
+        public const string DEFAULT_SMTP_SUBDOMAIN = "smtp.";
+        public const string DEFAULT_SMTP_PORT= "587";
+        public const string DEFAULT_IMAP_SUBDOMAIN = "imap.";
+        public const string DEFAULT_IMAP_PORT= "993";
 
         internal Mailbox mailbox;
 
@@ -48,15 +50,15 @@ namespace thecrypto
             if (smtpAutosetChB.IsChecked.Value)
             {
                 string server = getServerByEmail(address);
-                smtpDomainTB.Text = SMTP_SUBDOMAIN + server;
-                smtpPortTB.Text = "587";
+                smtpDomainTB.Text = DEFAULT_SMTP_SUBDOMAIN + server;
+                smtpPortTB.Text = DEFAULT_SMTP_PORT;
             }
 
             if (imapAutosetChB.IsChecked.Value)
             {
                 string server = getServerByEmail(address);
-                imapDomainTB.Text = IMAP_SUBDOMAIN + server;
-                imapPortTB.Text = "993";
+                imapDomainTB.Text = DEFAULT_IMAP_SUBDOMAIN + server;
+                imapPortTB.Text = DEFAULT_IMAP_PORT;
             }
             
             if (name.Length == 0 || address.Length == 0 || passTB.Password.Length == 0 ||

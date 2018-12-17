@@ -30,7 +30,9 @@ namespace thecrypto
                 return;
             }
 
-            if (!Account.GetSHA512(passTB.Password).Equals(expectedDigest))
+            string saltyDigest = Utils.byteArrayToHexString(Cryptography.
+                    getSHA512(passTB.Password + Cryptography.SALT));
+            if (!saltyDigest.Equals(expectedDigest))
             {
                 statusLabel.Content = "Неправильный пароль";
                 return;
@@ -57,7 +59,9 @@ namespace thecrypto
                 return;
             }
 
-            Account user = new Account(login, Account.GetSHA512(passTB.Password));
+            string saltyDigest = Utils.byteArrayToHexString(Cryptography.
+                    getSHA512(passTB.Password + Cryptography.SALT));
+            Account user = new Account(login, saltyDigest);
             user.Serialize();
             using (StreamWriter fs = new StreamWriter(Account.getAccountsListPath(), true))
             {

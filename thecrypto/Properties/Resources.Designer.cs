@@ -83,6 +83,26 @@ namespace thecrypto.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap encrypt {
+            get {
+                object obj = ResourceManager.GetObject("encrypt", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap encrypt_small {
+            get {
+                object obj = ResourceManager.GetObject("encrypt_small", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap letter {
             get {
                 object obj = ResourceManager.GetObject("letter", resourceCulture);
@@ -96,16 +116,6 @@ namespace thecrypto.Properties {
         public static System.Drawing.Bitmap logout {
             get {
                 object obj = ResourceManager.GetObject("logout", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
-        /// </summary>
-        public static System.Drawing.Bitmap mailbook {
-            get {
-                object obj = ResourceManager.GetObject("mailbook", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -146,6 +156,26 @@ namespace thecrypto.Properties {
         public static System.Drawing.Bitmap settings {
             get {
                 object obj = ResourceManager.GetObject("settings", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap signature {
+            get {
+                object obj = ResourceManager.GetObject("signature", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap signature_small {
+            get {
+                object obj = ResourceManager.GetObject("signature_small", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

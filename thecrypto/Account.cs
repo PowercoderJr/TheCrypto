@@ -75,25 +75,6 @@ namespace thecrypto
             return getAccountFilePath(login);
         }
 
-        // TODO: почему static?
-        // TODO: по варрианту - SHA1
-        // TODO: посолить
-        public static string GetSHA512(string text)
-        {
-            UnicodeEncoding UE = new UnicodeEncoding();
-            byte[] message = UE.GetBytes(text);
-            string encodedData = Convert.ToBase64String(message);
-
-            SHA512Managed hashString = new SHA512Managed();
-            byte[] hashValue = hashString.ComputeHash(UE.GetBytes(encodedData));
-            string hex = "";
-            foreach (byte x in hashValue)
-            {
-                hex += String.Format("{0:x2}", x);
-            }
-            return hex;
-        }
-
         public void Serialize()
         {
             Directory.CreateDirectory(Path.Combine(ACCOUNTS_DIR_NAME, login));
