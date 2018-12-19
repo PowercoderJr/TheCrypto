@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -179,9 +180,10 @@ namespace thecrypto
             // TODO: выполнять подключение и загрузку писем в отдельном потоке
             if (imapConnect(mailbox))
             {
-                loadLetters();
                 this.CurrMailbox = mailbox;
                 currEmailLabel.Content = mailbox;
+                downloadLetters();
+                displayLetters();
             }
             else
             {
@@ -201,6 +203,7 @@ namespace thecrypto
         {
             disposeImap();
             imap = new ImapX.ImapClient(mailbox.ImapDomain, mailbox.ImapPort, account.useSsl);
+            imap.Behavior.MessageFetchMode = ImapX.Enums.MessageFetchMode.Full;
             if (imap.Connect())
                 try
                 {
@@ -218,39 +221,67 @@ namespace thecrypto
             return false;
         }
 
-        public void loadLetters()
+        public void downloadLetters()
         {
-            // TEMP: загружать письма с MessageFetchMode.Tiny, дозагружать с MessageFetchMode.Full перед чтением
-            //imap.Behavior.MessageFetchMode = ImapX.Enums.MessageFetchMode.Flags | ImapX.Enums.MessageFetchMode.Headers;
-            imap.Behavior.MessageFetchMode = ImapX.Enums.MessageFetchMode.Full;
             foreach (ImapX.Folder folder in imap.Folders)
-                refreshFolder(folder, lettersTV.Items);
+                downloadFolder(folder);
         }
 
-        private void refreshFolder(ImapX.Folder folder, ItemCollection collection)
+        private void downloadFolder(ImapX.Folder folder)
         {
-            TreeViewItem twi = new TreeViewItem();
-
             foreach (ImapX.Folder subfolder in folder.SubFolders)
-                refreshFolder(subfolder, folder.Selectable ? twi.Items : lettersTV.Items);
+                downloadFolder(subfolder);
 
             if (folder.Selectable)
             {
-                folder.Messages.Download();
-                foreach (ImapX.Message message in folder.Messages)
-                    twi.Items.Add(message);
+                string dirPath = System.IO.Path.Combine(account.getAccountPath(), CurrMailbox.Address, folder.Name);
+                if (!Directory.Exists(dirPath))
+                    Directory.CreateDirectory(dirPath);
 
-                twi.Header = folder.Name + (twi.Items.Count > 0 ? (" (" + twi.Items.Count + ")") : "");
-                twi.ItemTemplate = letterDT;
-                collection.Add(twi);
+                List<string> files = Directory.EnumerateFiles(dirPath, "*.eml").OrderBy(filename => filename).ToList();
+                string last = files.Count > 0 ? files.Last().Substring(files.Last().LastIndexOf('\\') + 1) : "0";
+                last = System.IO.Path.GetFileNameWithoutExtension(last);
+                folder.Messages.Download("UID " + (int.Parse(last) + 1) + ":*");
+                foreach (ImapX.Message message in folder.Messages)
+                    message.SaveTo(dirPath, message.UId.ToString().PadLeft(15, '0') + ".eml");
             }
+        }
+
+        private void displayLetters()
+        {
+            string dirPath = System.IO.Path.Combine(account.getAccountPath(), CurrMailbox.Address);
+            if (!Directory.Exists(dirPath))
+            {
+                Utils.showError("Этот почтовый ящик не был синхронизирован");
+                return;
+            }
+
+            displayFolder(dirPath, lettersTV.Items);
+        }
+
+        private void displayFolder(string dirPath, ItemCollection collection)
+        {
+            foreach (string subdirPath in Directory.GetDirectories(dirPath))
+                displayFolder(subdirPath, collection);
+
+            TreeViewItem twi = new TreeViewItem();
+            string[] messages = Directory.GetFiles(dirPath, "*.eml");
+            foreach (string message in messages)
+            {
+                string eml = File.ReadAllText(message);
+                ImapX.Message msg = ImapX.Message.FromEml(eml);
+                twi.Items.Add(message);
+            }
+
+            twi.Header = (dirPath.LastIndexOf('\\') + 1) + (twi.Items.Count > 0 ? (" (" + twi.Items.Count + ")") : "");
+            twi.ItemTemplate = letterDT;
+            collection.Add(twi);
         }
 
         private void lettersTV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             ImapX.Message message = lettersTV.SelectedItem as ImapX.Message;
             if (message != null)
-            //if (message.Download(ImapX.Enums.MessageFetchMode.Full, true))
             {
                 message.Seen = true;
                 fillLetterForm(message);
@@ -327,7 +358,7 @@ namespace thecrypto
         private void refreshBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             lettersTV.Items.Clear();
-            loadLetters();
+            downloadLetters();
         }
 
         private void keyManagerBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)

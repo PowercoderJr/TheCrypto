@@ -39,7 +39,7 @@ namespace thecrypto
                 Purpose purpose)
         {
             this.Name = name;
-            this.Id = Utils.byteArrayToHexString(Cryptography.getSHA512(publicKey + Cryptography.SALT));
+            this.Id = Utils.byteArrayToHexString(Cryptography.getSHA512(publicKey));
             this.OwnerAddress = ownerAddress;
             this.PublicKey = publicKey;
             this.PrivateKey = privateKey;
