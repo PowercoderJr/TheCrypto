@@ -1,4 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using MailKit;
+using MailKit.Net.Imap;
+using Microsoft.Win32;
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -26,13 +29,13 @@ namespace thecrypto
 
         static MainWindow()
         {
-            ImapX.Message m; // DEBUG
+            MimeMessage m; // DEBUG
 
             var spFactory = new FrameworkElementFactory(typeof(StackPanel));
             spFactory.SetValue(StackPanel.OrientationProperty, Orientation.Horizontal);
 
             var senderTbFactory = new FrameworkElementFactory(typeof(TextBlock));
-            senderTbFactory.SetBinding(TextBlock.TextProperty, new Binding("From.DisplayName"));
+            senderTbFactory.SetBinding(TextBlock.TextProperty, new Binding("From[0].Name"));
             spFactory.AppendChild(senderTbFactory);
 
             var sep1TbFactory = new FrameworkElementFactory(typeof(TextBlock));
@@ -80,8 +83,8 @@ namespace thecrypto
                 NotifyPropertyChanged("CurrMailbox");
             }
         }
-        private ImapX.Message currMessage;
-        public ImapX.Message CurrMessage
+        private MimeMessage currMessage;
+        public MimeMessage CurrMessage
         {
             get => currMessage;
             set
@@ -90,7 +93,7 @@ namespace thecrypto
                 NotifyPropertyChanged("CurrMessage");
             }
         }
-        private ImapX.ImapClient imap;
+        private ImapClient imap;
 
         public event PropertyChangedEventHandler PropertyChanged;
         // This method is called by the Set accessor of each property.  
@@ -202,38 +205,39 @@ namespace thecrypto
         private bool imapConnect(Mailbox mailbox)
         {
             disposeImap();
-            imap = new ImapX.ImapClient(mailbox.ImapDomain, mailbox.ImapPort, account.useSsl);
-            imap.Behavior.MessageFetchMode = ImapX.Enums.MessageFetchMode.Full;
-            if (imap.Connect())
-                try
-                {
-                    if (!imap.Login(mailbox.Address, mailbox.Password))
-                        Utils.showWarning("Не удалось выполнить вход в " + mailbox.Address + ". Проверьте правильность адреса и пароля.");
-                    else
-                        return true;
-                }
-                catch (Exception e)
-                {
-                    Utils.showWarning(e.Message);
-                }
-            else
-                Utils.showWarning("Ошибка соединения IMAP");
+            imap = new ImapClient();
+            imap.Connect(mailbox.ImapDomain, mailbox.ImapPort, account.useSsl);
+            try
+            {
+                imap.Authenticate(mailbox.Address, mailbox.Password);
+                /*Utils.showWarning("Не удалось выполнить вход в " + mailbox.Address + ". Проверьте правильность адреса и пароля.");
+            else*/
+                return true;
+            }
+            catch (Exception e)
+            {
+                Utils.showWarning(e.Message);
+            }
+            /*else
+                Utils.showWarning("Ошибка соединения IMAP");*/
             return false;
         }
 
         public void downloadLetters()
         {
-            foreach (ImapX.Folder folder in imap.Folders)
-                downloadFolder(folder);
+            /*foreach (ImapFolder folder in imap.GetFolders(imap.PersonalNamespaces.First()))
+                downloadFolder(folder);*/
+            downloadFolder(imap.GetFolder(imap.PersonalNamespaces.First()) as ImapFolder);
         }
 
-        private void downloadFolder(ImapX.Folder folder)
+        private void downloadFolder(ImapFolder folder)
         {
-            foreach (ImapX.Folder subfolder in folder.SubFolders)
+            foreach (ImapFolder subfolder in folder.GetSubfolders())
                 downloadFolder(subfolder);
 
-            if (folder.Selectable)
+            if (folder.Attributes != FolderAttributes.None && (folder.Attributes & FolderAttributes.NonExistent) == 0)
             {
+                folder.Open(FolderAccess.ReadOnly);
                 string dirPath = System.IO.Path.Combine(account.getAccountPath(), CurrMailbox.Address, folder.Name);
                 if (!Directory.Exists(dirPath))
                     Directory.CreateDirectory(dirPath);
@@ -241,9 +245,14 @@ namespace thecrypto
                 List<string> files = Directory.EnumerateFiles(dirPath, "*.eml").OrderBy(filename => filename).ToList();
                 string last = files.Count > 0 ? files.Last().Substring(files.Last().LastIndexOf('\\') + 1) : "0";
                 last = System.IO.Path.GetFileNameWithoutExtension(last);
-                folder.Messages.Download("UID " + (int.Parse(last) + 1) + ":*");
-                foreach (ImapX.Message message in folder.Messages)
-                    message.SaveTo(dirPath, message.UId.ToString().PadLeft(15, '0') + ".eml");
+                IList<UniqueId> uids = folder.Search(MailKit.Search.SearchQuery.Uids(
+                        new UniqueIdRange(new UniqueId(uint.Parse(last) + 1), UniqueId.MaxValue)));
+                foreach (UniqueId uid in uids)
+                {
+                    MimeMessage message = folder.GetMessage(uid);
+                    message.WriteTo(System.IO.Path.Combine(dirPath, uid.ToString().PadLeft(15, '0') + ".eml"));
+                }
+                folder.Close();
             }
         }
 
@@ -267,28 +276,25 @@ namespace thecrypto
             TreeViewItem twi = new TreeViewItem();
             string[] messages = Directory.GetFiles(dirPath, "*.eml");
             foreach (string message in messages)
-            {
-                string eml = File.ReadAllText(message);
-                ImapX.Message msg = ImapX.Message.FromEml(eml);
-                twi.Items.Add(message);
-            }
+                twi.Items.Add(MimeMessage.Load(message));
 
-            twi.Header = (dirPath.LastIndexOf('\\') + 1) + (twi.Items.Count > 0 ? (" (" + twi.Items.Count + ")") : "");
+            twi.Header = (dirPath.Substring(dirPath.LastIndexOf('\\') + 1)) + (twi.Items.Count > 0 ?
+                    (" (" + twi.Items.Count + ")") : "");
             twi.ItemTemplate = letterDT;
             collection.Add(twi);
         }
 
         private void lettersTV_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            ImapX.Message message = lettersTV.SelectedItem as ImapX.Message;
+            MimeMessage message = lettersTV.SelectedItem as MimeMessage;
             if (message != null)
             {
-                message.Seen = true;
+                // TODO: добавить флаг "прочитано"
                 fillLetterForm(message);
             }
         }
 
-        private void fillLetterForm(ImapX.Message message)
+        private void fillLetterForm(MimeMessage message)
         {
             CurrMessage = message;
             if (message == null)
@@ -304,17 +310,17 @@ namespace thecrypto
             else
             {
                 StringBuilder fromToDatetime = new StringBuilder(message.Date + 
-                        " от " + message.From.DisplayName + 
-                        " <" + message.From.Address + "> для ");
-                foreach (ImapX.MailAddress receiver in message.To)
-                    fromToDatetime.Append(receiver.DisplayName +
+                        " от " + message.From.Mailboxes.First().Name + 
+                        " <" + message.From.Mailboxes.First().Address + "> для ");
+                foreach (MailboxAddress receiver in message.To)
+                    fromToDatetime.Append(receiver.Name +
                         " <" + receiver.Address + ">, ");
                 fromToDatetime.Remove(fromToDatetime.Length - 2, 2);
                 if (message.Cc.Count > 0)
                 {
                     fromToDatetime.Append("; Копии: ");
-                    foreach (ImapX.MailAddress receiver in message.Cc)
-                        fromToDatetime.Append(receiver.DisplayName +
+                    foreach (MailboxAddress receiver in message.Cc)
+                        fromToDatetime.Append(receiver.Name +
                             " <" + receiver.Address + ">, ");
                     fromToDatetime.Remove(fromToDatetime.Length - 2, 2);
                 }
@@ -323,7 +329,7 @@ namespace thecrypto
                 encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = "Hello";
                 signatureStatusLabel.Content = signatureStatusLabel.ToolTip = "World";
 
-                string body = message.Body.Html;
+                string body = message.HtmlBody ?? message.TextBody;
                 int index = body.IndexOf("<html>", StringComparison.OrdinalIgnoreCase);
                 if (index < 0)
                     body = "<html><meta charset=\"utf-8\"><body>" + body + "</body></html>";
@@ -332,7 +338,7 @@ namespace thecrypto
                 letterWB.NavigateToString(body);
 
                 attachmentsPanel.Items.Clear();
-                foreach (ImapX.Attachment attachment in message.Attachments)
+                foreach (MimeEntity attachment in message.Attachments)
                     attachmentsPanel.Items.Add(attachment);
                 replyBtn.IsEnabled = true;
             }
@@ -340,12 +346,27 @@ namespace thecrypto
 
         private void attachment_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            ImapX.Attachment attachment = (sender as FrameworkElement).DataContext as ImapX.Attachment;
+            MimeEntity attachment = (sender as FrameworkElement).DataContext as MimeEntity;
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Title = "Сохранить файл...";
-            sfd.FileName = attachment.FileName;
+            sfd.FileName = attachment.ContentDisposition?.FileName ?? attachment.ContentType.Name;
             if (sfd.ShowDialog(this).Value)
-                attachment.Save(System.IO.Path.GetDirectoryName(sfd.FileName), System.IO.Path.GetFileName(sfd.FileName));
+            {
+                using (var stream = File.Create(sfd.FileName))
+                {
+                    if (attachment is MessagePart)
+                    {
+                        var rfc822 = (MessagePart)attachment;
+                        rfc822.Message.WriteTo(stream);
+                    }
+                    else
+                    {
+                        var part = (MimePart)attachment;
+                        part.Content.DecodeTo(stream);
+                    }
+                }
+                //attachment.Save(System.IO.Path.GetDirectoryName(sfd.FileName), System.IO.Path.GetFileName(sfd.FileName));
+            }
         }
 
         private void letterBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -378,10 +399,10 @@ namespace thecrypto
         {
             WriteLetterWindow wlw = new WriteLetterWindow(CurrMailbox, account.useSsl);
             wlw.subjectTB.Text = CurrMessage.Subject;
-            StringBuilder replyTo = new StringBuilder(CurrMessage.From.Address + ", ");
-            foreach (ImapX.MailAddress receiver in CurrMessage.To)
+            StringBuilder replyTo = new StringBuilder(CurrMessage.From.Mailboxes.First().Address + ", ");
+            foreach (MailboxAddress receiver in CurrMessage.To)
                 if (!receiver.Address.Equals(CurrMailbox.Address) &&
-                        !receiver.Address.Equals(CurrMessage.From.Address))
+                        !receiver.Address.Equals(CurrMessage.From.Mailboxes.First().Address))
                     replyTo.Append(receiver.Address + ", ");
             replyTo.Remove(replyTo.Length - 2, 2);
             wlw.recipientsTB.Text = replyTo.ToString();
@@ -394,7 +415,7 @@ namespace thecrypto
             if (imap != null)
             {
                 if (imap.IsConnected)
-                    imap.Disconnect();
+                    imap.Disconnect(false);
                 imap.Dispose();
             }
         }
