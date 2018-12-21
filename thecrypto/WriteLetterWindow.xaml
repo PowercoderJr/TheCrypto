@@ -10,13 +10,13 @@
     <DockPanel>
         <Grid DockPanel.Dock="Top" Margin="8">
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="30"/>
+                <RowDefinition Height="26"/>
+                <RowDefinition Height="26"/>
+                <RowDefinition Height="26"/>
+                <RowDefinition Height="26"/>
+                <RowDefinition Height="26"/>
+                <RowDefinition Height="26"/>
+                <RowDefinition Height="26"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -24,20 +24,22 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Label Content="Отправитель:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <DockPanel Grid.Column="1" x:Name="fromToDatetimeLabel" VerticalAlignment="Stretch">
+            <DockPanel Grid.Column="1" x:Name="fromToDatetimeLabel" VerticalAlignment="Stretch" Margin="0,1,0,1">
                 <TextBox DockPanel.Dock="Left" x:Name="senderNameTB" BorderThickness="1,1,0,1"/>
                 <TextBox x:Name="sendetAddressTB" HorizontalAlignment="Stretch" IsReadOnly="True" BorderThickness="0,1,1,1"/>
             </DockPanel>
             <Label Grid.Row="1" Content="Получатели:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="1" Grid.Column="1" x:Name="recipientsTB"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="recipientsTB" Margin="0,1,0,1"/>
             <Label Grid.Row="2" Content="Копии:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="2" Grid.Column="1" x:Name="recipientsCcTB"/>
+            <TextBox Grid.Row="2" Grid.Column="1" x:Name="recipientsCcTB" Margin="0,1,0,1"/>
             <Label Grid.Row="3" Content="Скрытые копии:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="3" Grid.Column="1" x:Name="recipientsBccTB"/>
+            <TextBox Grid.Row="3" Grid.Column="1" x:Name="recipientsBccTB" Margin="0,1,0,1"/>
             <Label Grid.Row="4" Content="Тема:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox Grid.Row="4" Grid.Column="1" x:Name="subjectTB"/>
-            <Label Grid.Row="5" Content="Подпись:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <Label Grid.Row="6" Content="Шифрование:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+            <TextBox Grid.Row="4" Grid.Column="1" x:Name="subjectTB" Margin="0,1,0,1"/>
+            <CheckBox x:Name="encryptChb" Grid.Row="5" Content="Шифрование" HorizontalAlignment="Right" VerticalAlignment="Center" FlowDirection="RightToLeft" Margin="0,0,4,0" Unchecked="encryptChb_Unchecked"/>
+            <ComboBox x:Name="encryptionCB" Grid.Row="5" Grid.Column="1" Margin="0,1,0,1" SelectionChanged="encryptionCB_SelectionChanged"/>
+            <CheckBox x:Name="signChb" Grid.Row="6" Content="Подпись" HorizontalAlignment="Right" VerticalAlignment="Center" FlowDirection="RightToLeft" Margin="0,0,4,0" Unchecked="signChb_Unchecked"/>
+            <ComboBox x:Name="signatureCB" Grid.Row="6" Grid.Column="1" Margin="0,1,0,1" SelectionChanged="signatureCB_SelectionChanged"/>
         </Grid>
         <Border DockPanel.Dock="Bottom" BorderBrush="#FF828790" BorderThickness="0,1,0,0" Padding="8">
             <Grid MinHeight="32">

@@ -336,6 +336,35 @@ namespace thecrypto
                 signatureStatusLabel.Content = signatureStatusLabel.ToolTip = "World";
 
                 string body = message.HtmlBody ?? message.TextBody;
+
+                if (message.Headers.Contains(Cryptography.ENCRYPTION_HEADER))
+                {
+                    List<CryptoKey> results = account.keys.Where(k => k.Id.Equals(message.
+                            Headers[Cryptography.ENCRYPTION_HEADER]) && !k.PublicOnly).ToList();
+                    if (results.Count > 0)
+                    {
+                        CryptoKey key = results.First();
+
+                        body = Cryptography.decrypt(body, key);
+
+                        encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = 
+                                "Расшифровано с помощью \"" + key + "\"";
+                        encryptionStatusLabel.Foreground = Brushes.DarkGreen;
+                    }
+                    else
+                    {
+                        encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = 
+                                "Письмо зашифровано, ключ не найден";
+                        encryptionStatusLabel.Foreground = Brushes.DarkRed;
+                    }
+                }
+                else
+                {
+                    encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = 
+                            "Письмо не зашифровано";
+                    encryptionStatusLabel.Foreground = Brushes.Black;
+                }
+
                 int index = body.IndexOf("<html>", StringComparison.OrdinalIgnoreCase);
                 if (index < 0)
                     body = "<html><meta charset=\"utf-8\"><body>" + body + "</body></html>";
@@ -376,7 +405,7 @@ namespace thecrypto
 
         private void letterBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            WriteLetterWindow wlw = new WriteLetterWindow(CurrMailbox, account.useSsl);
+            WriteLetterWindow wlw = new WriteLetterWindow(CurrMailbox, account.keys, account.useSsl);
             wlw.Owner = this;
             wlw.Show();
         }
@@ -402,7 +431,7 @@ namespace thecrypto
 
         private void replyBtn_Click(object sender, RoutedEventArgs e)
         {
-            WriteLetterWindow wlw = new WriteLetterWindow(CurrMailbox, account.useSsl);
+            WriteLetterWindow wlw = new WriteLetterWindow(CurrMailbox, account.keys, account.useSsl);
             wlw.subjectTB.Text = CurrMessage.Subject;
             StringBuilder replyTo = new StringBuilder(CurrMessage.From.Mailboxes.First().Address + ", ");
             foreach (MailboxAddress receiver in CurrMessage.To)

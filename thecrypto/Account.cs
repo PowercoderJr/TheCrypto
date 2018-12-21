@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 
 namespace thecrypto
 {
+    // TODO: пересмотреть класс
     [Serializable]
     public class Account : ICloneable
     {

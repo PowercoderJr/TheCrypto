@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -75,8 +76,8 @@ namespace thecrypto
             CryptoKey key = keysLB.SelectedItem as CryptoKey;
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Title = "Сохранить ключ...";
-            sfd.FileName = key.Name + ".key";
-            sfd.DefaultExt = ".key";
+            sfd.FileName = key.Name + CryptoKey.DEFAULT_EXT;
+            sfd.DefaultExt = CryptoKey.DEFAULT_EXT;
             if (sfd.ShowDialog().Value)
                 using (FileStream fstream = File.Open(sfd.FileName, FileMode.Create))
                 {
@@ -94,6 +95,16 @@ namespace thecrypto
 
         private void encryptBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            // DEBUG
+            CryptoKey key = keysLB.SelectedItem as CryptoKey;
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            {
+                // DEBUG
+                /*var crypt = Cryptography.encrypt("Hello world", rsa.ExportParameters(false));
+                var plain = Cryptography.decrypt(crypt, rsa.ExportParameters(true));*/
+            }
+
+            return;
             throw new NotImplementedException();
         }
 

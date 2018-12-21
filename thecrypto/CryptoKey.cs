@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 namespace thecrypto
 {
     [Serializable]
-    class CryptoKey
+    public class CryptoKey
     {
         public const string DEFAULT_EXT = ".key";
         public enum Purpose { Encryption, Signature }
@@ -40,7 +40,7 @@ namespace thecrypto
                 Purpose purpose)
         {
             this.Name = name;
-            this.Id = Utils.byteArrayToHexString(Cryptography.getSHA512(publicKey));
+            this.Id = Utils.byteArrayToHexString(Cryptography.getSHA1(publicKey));
             this.OwnerAddress = ownerAddress;
             this.PublicKey = publicKey;
             this.PrivateKey = privateKey;
@@ -54,6 +54,11 @@ namespace thecrypto
             CryptoKey output = new CryptoKey(PublicKey, null, Name, OwnerAddress, KeyPurpose);
             output.DateTime = this.DateTime;
             return output;
+        }
+
+        public override string ToString()
+        {
+            return Name + " (" + OwnerAddress + ")";
         }
     }
 }
