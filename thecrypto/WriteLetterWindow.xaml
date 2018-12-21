@@ -50,11 +50,8 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
-                                <StackPanel.Resources>
-                                    <Style TargetType="local:AutoGreyableImage" BasedOn="{StaticResource clickableImage}"/>
-                                </StackPanel.Resources>
                                 <TextBlock Text="{Binding FileName}"/>
-                                <local:AutoGreyableImage Source="Resources/remove_small.png" MouseLeftButtonUp="removeAttachmentBtn_MouseLeftButtonUp" Width="16" Height="16" Margin="2,0,0,0"/>
+                                <local:AutoGreyableImage Source="Resources/remove_small.png" MouseLeftButtonUp="removeAttachmentBtn_MouseLeftButtonUp" Cursor="Hand" Width="16" Height="16" Margin="2,0,0,0"/>
                             </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

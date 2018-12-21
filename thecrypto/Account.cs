@@ -45,6 +45,7 @@ namespace thecrypto
         internal int currMailbox;
 
         internal ObservableCollection<Mailbox> mailboxes;
+        internal ObservableCollection<CryptoKey> keys;
 
         public bool Use_save_post = false;
         public int count = 5;
@@ -63,6 +64,7 @@ namespace thecrypto
             this.currMailbox = currMailbox;
 
             this.mailboxes = new ObservableCollection<Mailbox>();
+            this.keys = new ObservableCollection<CryptoKey>();
         }
 
         public string getAccountPath()

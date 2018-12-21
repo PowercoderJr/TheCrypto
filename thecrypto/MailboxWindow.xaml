@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:thecrypto"
         mc:Ignorable="d"
-        Title="Почтовый ящик" Height="300" Width="500" ResizeMode="NoResize">
+        Title="The Crypto - Почтовый ящик" Height="300" Width="500" WindowStyle="ToolWindow" ResizeMode="NoResize">
     <Grid Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="16"/>
@@ -40,15 +40,15 @@
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
             <Label Content="SMTP:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox x:Name="smtpDomainTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBox x:Name="smtpDomainTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="{Binding ElementName=smtpAutosetChB, Path=IsChecked}"/>
             <Label Grid.Column="2" Content="Порт:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox x:Name="smtpPortTB" Grid.Column="3" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBox x:Name="smtpPortTB" Grid.Column="3" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="{Binding ElementName=smtpAutosetChB, Path=IsChecked}"/>
             <CheckBox x:Name="smtpAutosetChB" Grid.Column="4" Margin="8,11,0,6" Content="Автоматически" IsChecked="True" HorizontalAlignment="Right"/>
             
             <Label Grid.Row="1" Content="IMAP:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox x:Name="imapDomainTB" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBox x:Name="imapDomainTB" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="{Binding ElementName=imapAutosetChB, Path=IsChecked}"/>
             <Label Grid.Row="1" Grid.Column="2" Content="Порт:" HorizontalAlignment="Right" VerticalAlignment="Center"/>
-            <TextBox x:Name="imapPortTB" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBox x:Name="imapPortTB" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Stretch" Height="24" Margin="5,8,3,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="{Binding ElementName=imapAutosetChB, Path=IsChecked}"/>
             <CheckBox x:Name="imapAutosetChB" Grid.Row="1" Grid.Column="4" Margin="8,11,0,6" Content="Автоматически" IsChecked="True" HorizontalAlignment="Right"/>
 
         </Grid>

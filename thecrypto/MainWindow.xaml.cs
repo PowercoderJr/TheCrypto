@@ -117,17 +117,19 @@ namespace thecrypto
 
         private void addMailboxBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            MailboxWindow mw = new MailboxWindow();
+            MailboxWindow mw = new MailboxWindow(null);
             mw.Owner = this;
             if (mw.ShowDialog().Value)
             {
                 string address = mw.addressTB.Text.Trim();
-                if (account.mailboxes.Any(item => item.Address.Equals(address)))
-                    Utils.showWarning(address + " уже есть в списке почтовых ящиков");
-                else
+                if (!account.mailboxes.Any(item => item.Address.Equals(address)))
                 {
                     account.mailboxes.Add(mw.mailbox);
                     account.Serialize();
+                }
+                else
+                {
+                    Utils.showWarning(address + " уже есть в списке почтовых ящиков");
                 }
             }
         }
@@ -155,6 +157,8 @@ namespace thecrypto
         private void removeMailboxBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             // TODO: закрыть текущий ящик, если его удалили
+            // TODO: удалить приватные ключи ящика
+            // TODO: удалить сохранённые письма ящика
             Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
             if (mailbox != null)
             {
@@ -281,6 +285,8 @@ namespace thecrypto
             twi.Header = (dirPath.Substring(dirPath.LastIndexOf('\\') + 1)) + (twi.Items.Count > 0 ?
                     (" (" + twi.Items.Count + ")") : "");
             twi.ItemTemplate = letterDT;
+
+            // TODO: обратить порядок писем
             collection.Add(twi);
         }
 
@@ -365,7 +371,6 @@ namespace thecrypto
                         part.Content.DecodeTo(stream);
                     }
                 }
-                //attachment.Save(System.IO.Path.GetDirectoryName(sfd.FileName), System.IO.Path.GetFileName(sfd.FileName));
             }
         }
 

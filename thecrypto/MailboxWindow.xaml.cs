@@ -14,26 +14,18 @@ namespace thecrypto
 
         internal Mailbox mailbox;
 
-        public MailboxWindow(string name="", string address="")
-        {
-            InitializeComponent();
-            this.mailbox = new Mailbox(name, address, "");
-            nameTB.Text = mailbox.Name;
-            addressTB.Text = mailbox.Address;
-        }
-
         public MailboxWindow(Mailbox mailbox)
         {
             InitializeComponent();
-            this.mailbox = mailbox;
-            nameTB.Text = mailbox.Name;
-            addressTB.Text = mailbox.Address;
-            smtpDomainTB.Text = mailbox.SmtpDomain;
-            smtpPortTB.Text = mailbox.SmtpPort.ToString();
-            smtpAutosetChB.IsChecked = false;
-            imapDomainTB.Text = mailbox.ImapDomain;
-            imapPortTB.Text = mailbox.ImapPort.ToString();
-            imapAutosetChB.IsChecked = false;
+            this.mailbox = mailbox ?? new Mailbox("", "", "");
+            nameTB.Text = this.mailbox.Name;
+            addressTB.Text = this.mailbox.Address;
+            smtpDomainTB.Text = this.mailbox.SmtpDomain;
+            smtpPortTB.Text = this.mailbox.SmtpPort.ToString();
+            smtpAutosetChB.IsChecked = mailbox == null;
+            imapDomainTB.Text = this.mailbox.ImapDomain;
+            imapPortTB.Text = this.mailbox.ImapPort.ToString();
+            imapAutosetChB.IsChecked = mailbox == null;
         }
 
         private void okBtn_Click(object sender, RoutedEventArgs e)

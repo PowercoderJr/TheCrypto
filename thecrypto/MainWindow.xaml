@@ -9,13 +9,13 @@
     <DockPanel LastChildFill="True">
         <DockPanel Width="275" DockPanel.Dock="Left">
             <DockPanel.Resources>
-                <Style TargetType="local:AutoGreyableImage" BasedOn="{StaticResource clickableImage}"/>
+                <Style TargetType="local:AutoGreyableImage"/>
                 <local:IsMailboxSelectedValueConverter x:Key="IsMailboxSelectedVC"/>
             </DockPanel.Resources>
             <Label x:Name="nameLabel" DockPanel.Dock="Top" Content=" " Margin="10,10,10,0" VerticalAlignment="Top"/>
             <Grid DockPanel.Dock="Top" HorizontalAlignment="Stretch" Margin="10,0,10,10" Height="48">
                 <Grid.Resources>
-                    <Style TargetType="Image" BasedOn="{StaticResource clickableImage}"/>
+                    <Style TargetType="Image"/>
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
@@ -23,10 +23,10 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <local:AutoGreyableImage x:Name="letterBtn" ToolTip="Написать письмо" Grid.Column="0" Source="Resources/letter.png" MouseLeftButtonUp="letterBtn_MouseLeftButtonUp" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
-                <local:AutoGreyableImage x:Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png" MouseLeftButtonUp="refreshBtn_MouseLeftButtonUp" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
-                <local:AutoGreyableImage x:Name="keyManagerBtn" ToolTip="Менеджер ключей" Grid.Column="2" Source="Resources/encrypt.png" MouseLeftButtonUp="keyManagerBtn_MouseLeftButtonUp"/>
-                <local:AutoGreyableImage x:Name="logoutBtn" ToolTip="Выйти из аккаунта" Grid.Column="3" Source="Resources/logout.png" MouseLeftButtonUp="logoutBtn_MouseLeftButtonUp"/>
+                <local:AutoGreyableImage x:Name="letterBtn" ToolTip="Написать письмо" Grid.Column="0" Source="Resources/letter.png" MouseLeftButtonUp="letterBtn_MouseLeftButtonUp" Cursor="Hand" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="refreshBtn" ToolTip="Обновить список писем" Grid.Column="1" Source="Resources/refresh.png" MouseLeftButtonUp="refreshBtn_MouseLeftButtonUp" Cursor="Hand" IsEnabled="{Binding CurrMailbox, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="keyManagerBtn" ToolTip="Менеджер ключей" Grid.Column="2" Source="Resources/cryptography.png" MouseLeftButtonUp="keyManagerBtn_MouseLeftButtonUp" Cursor="Hand"/>
+                <local:AutoGreyableImage x:Name="logoutBtn" ToolTip="Выйти из аккаунта" Grid.Column="3" Source="Resources/logout.png" MouseLeftButtonUp="logoutBtn_MouseLeftButtonUp" Cursor="Hand"/>
             </Grid>
             <Grid DockPanel.Dock="Bottom" HorizontalAlignment="Stretch" Margin="10" Height="32">
                 <Grid.ColumnDefinitions>
@@ -34,9 +34,9 @@
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
-                <local:AutoGreyableImage x:Name="addMailboxBtn" ToolTip="Добавить почтовый ящик" Grid.Column="0" Source="Resources/add.png" MouseLeftButtonUp="addMailboxBtn_MouseLeftButtonUp"/>
-                <local:AutoGreyableImage x:Name="editMailboxBtn" ToolTip="Изменить почтовый ящик" Grid.Column="1" Source="Resources/edit.png" MouseLeftButtonUp="editMailboxBtn_MouseLeftButtonUp" IsEnabled="{Binding ElementName=mailboxesLB, Path=SelectedItem, Converter={StaticResource IsMailboxSelectedVC}}"/>
-                <local:AutoGreyableImage x:Name="removeMailboxBtn" ToolTip="Удалить почтовый ящик" Grid.Column="2" Source="Resources/remove.png" MouseLeftButtonUp="removeMailboxBtn_MouseLeftButtonUp" IsEnabled="{Binding ElementName=mailboxesLB, Path=SelectedItem, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="addMailboxBtn" ToolTip="Добавить почтовый ящик" Grid.Column="0" Source="Resources/add.png" MouseLeftButtonUp="addMailboxBtn_MouseLeftButtonUp" Cursor="Hand"/>
+                <local:AutoGreyableImage x:Name="editMailboxBtn" ToolTip="Изменить почтовый ящик" Grid.Column="1" Source="Resources/edit.png" MouseLeftButtonUp="editMailboxBtn_MouseLeftButtonUp" Cursor="Hand" IsEnabled="{Binding ElementName=mailboxesLB, Path=SelectedItem, Converter={StaticResource IsMailboxSelectedVC}}"/>
+                <local:AutoGreyableImage x:Name="removeMailboxBtn" ToolTip="Удалить почтовый ящик" Grid.Column="2" Source="Resources/remove.png" MouseLeftButtonUp="removeMailboxBtn_MouseLeftButtonUp" Cursor="Hand" IsEnabled="{Binding ElementName=mailboxesLB, Path=SelectedItem, Converter={StaticResource IsMailboxSelectedVC}}"/>
             </Grid>
             <ListBox x:Name="mailboxesLB" HorizontalAlignment="Stretch" Margin="10,0" VerticalAlignment="Stretch" MouseDoubleClick="mailboxesLB_MouseDoubleClick"/>
         </DockPanel>

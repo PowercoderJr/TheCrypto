@@ -1,0 +1,30 @@
+﻿<Window x:Class="thecrypto.AskStringWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:thecrypto"
+        mc:Ignorable="d"
+        Title="Введите значение" Height="150" Width="500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="msgLabel" Text="Значение:" Margin="8,15,8.347,2" Height="20" TextAlignment="Right"/>
+        <TextBox x:Name="valueTB" Grid.Column="1" Margin="5.306,12,10,4" Height="24"/>
+        <Grid Grid.Row="1" Grid.ColumnSpan="2" Margin="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="okBtn" Content="ОК" HorizontalAlignment="Stretch" Margin="0,0,4,0" VerticalAlignment="Stretch" Click="okBtn_Click"/>
+            <Button x:Name="cancelBtn" Grid.Column="1" Content="Отмена" HorizontalAlignment="Stretch" Margin="4,0,0,0" VerticalAlignment="Stretch" Click="cancelBtn_Click"/>
+        </Grid>
+    </Grid>
+</Window>

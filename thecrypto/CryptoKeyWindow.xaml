@@ -1,0 +1,60 @@
+﻿<Window x:Class="thecrypto.CryptoKeyWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:thecrypto"
+        mc:Ignorable="d"
+        Title="CryptoKeyWindow" Height="282" Width="500" WindowStyle="ToolWindow" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="138"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <RadioButton x:Name="loadKeyRB" Content="Загрузить" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <RadioButton x:Name="createKeyRB" Content="Создать" HorizontalAlignment="Left" Margin="10,10,0,0" Grid.Row="1" VerticalAlignment="Top" IsChecked="True"/>
+        <Button x:Name="browseBtn" Content="Обзор..." Grid.Column="1" HorizontalAlignment="Left" Margin="10,7,0,0" VerticalAlignment="Top" Width="75" IsEnabled="{Binding ElementName=loadKeyRB, Path=IsChecked}" Click="browseBtn_Click"/>
+        <TextBox x:Name="filepathTB" Grid.Column="1" HorizontalAlignment="Stretch" Grid.ColumnSpan="2" Height="23" Margin="90,7,8,0" TextWrapping="Wrap" IsReadOnly="True" VerticalAlignment="Top" />
+
+        <Border Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="#FF828790" Margin="8" IsEnabled="{Binding ElementName=createKeyRB, Path=IsChecked}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="3*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="85"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Название:" HorizontalAlignment="Right" Grid.Row="0" Height="25" Margin="0,10,0,14.667"/>
+                <Label Content="Владелец:" HorizontalAlignment="Right" Grid.Row="1" Height="25"/>
+                <Label Content="Назначение:" HorizontalAlignment="Right" Grid.Row="2" Height="25"/>
+                <TextBox x:Name="nameTB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,11,11,0" Grid.Row="0" VerticalAlignment="Top"/>
+                <ComboBox x:Name="ownerCB" Grid.Column="1" HorizontalAlignment="Stretch" Height="24" Margin="5,12.333,11,0" Grid.Row="1" VerticalAlignment="Top"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Margin="8,8,8,4">
+                    <RadioButton x:Name="encryptionPurposeRB" IsChecked="True">
+                        <StackPanel Orientation="Horizontal">
+                            <local:AutoGreyableImage Source="Resources/cryptography_small.png" Width="16"/>
+                            <TextBlock Text="Шифрование"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="signPurposeRB">
+                        <StackPanel Orientation="Horizontal">
+                            <local:AutoGreyableImage Source="Resources/signature_small.png" Width="16"/>
+                            <TextBlock Text="Цифровая подпись"/>
+                        </StackPanel>
+                    </RadioButton>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <Button x:Name="okBtn" Grid.ColumnSpan="2" Content="ОК" HorizontalAlignment="Stretch" Margin="8,0,4,8" Grid.Row="2" VerticalAlignment="Stretch" Click="okBtn_Click"/>
+        <Button x:Name="cancelBtn" Grid.Column="2" Content="Отмена" HorizontalAlignment="Stretch" Margin="4,0,8,8" Grid.Row="2" VerticalAlignment="Stretch" Click="cancelBtn_Click"/>
+    </Grid>
+</Window>

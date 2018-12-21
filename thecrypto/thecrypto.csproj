@@ -74,18 +74,33 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AskStringWindow.xaml.cs">
+      <DependentUpon>AskStringWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AutoGreyableImage.cs" />
     <Compile Include="Cryptography.cs" />
     <Compile Include="CryptoKey.cs" />
+    <Compile Include="CryptoKeyWindow.xaml.cs">
+      <DependentUpon>CryptoKeyWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IsMailboxSelectedValueConverter.cs" />
     <Compile Include="KeysManagerWindow.xaml.cs">
       <DependentUpon>KeysManagerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Send_box.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WriteLetterWindow.xaml.cs">
       <DependentUpon>WriteLetterWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="AskStringWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AuthWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -97,6 +112,10 @@
     <Compile Include="AuthWindow.xaml.cs">
       <DependentUpon>AuthWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="CryptoKeyWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="KeysManagerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -125,11 +144,6 @@
     <Compile Include="Account.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -189,10 +203,22 @@
     <Resource Include="Resources\signature_small.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\cryptography.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\cryptography_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\decrypt.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Resources\encrypt.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\encrypt_small.png" />
+    <Resource Include="Resources\save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\rename.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

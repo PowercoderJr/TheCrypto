@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace thecrypto
@@ -27,10 +28,10 @@ namespace thecrypto
 
         public static string byteArrayToHexString(byte[] input)
         {
-            string output = "";
+            StringBuilder output = new StringBuilder();
             foreach (byte x in input)
-                output += string.Format("{0:x2}", x);
-            return output;
+                output.Append(string.Format("{0:x2}", x));
+            return output.ToString();
         }
     }
 }

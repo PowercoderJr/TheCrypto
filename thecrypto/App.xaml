@@ -4,8 +4,5 @@
              xmlns:local="clr-namespace:thecrypto"
              StartupUri="AuthWindow.xaml">
     <Application.Resources>
-        <Style x:Key="clickableImage" TargetType="local:AutoGreyableImage">
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
     </Application.Resources>
 </Application>

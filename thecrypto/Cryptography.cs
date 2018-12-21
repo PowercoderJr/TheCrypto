@@ -12,7 +12,6 @@ namespace thecrypto
         public const string SALT = "BeLucky";
 
         // TODO: по варрианту - SHA1
-        // TODO: посолить использования
         public static byte[] getSHA512(string text)
         {
             UnicodeEncoding encoding = new UnicodeEncoding();
