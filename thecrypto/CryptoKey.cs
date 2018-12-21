@@ -7,6 +7,7 @@ using System.Security.Cryptography;
 
 namespace thecrypto
 {
+    // TODO: сделать абстрактным и разбить на подклассы?
     [Serializable]
     public class CryptoKey
     {
@@ -40,7 +41,7 @@ namespace thecrypto
                 Purpose purpose)
         {
             this.Name = name;
-            this.Id = Utils.byteArrayToHexString(Cryptography.getSHA1(publicKey));
+            this.Id = Utils.byteArrayToHexString(Cryptography.getSha1(publicKey));
             this.OwnerAddress = ownerAddress;
             this.PublicKey = publicKey;
             this.PrivateKey = privateKey;

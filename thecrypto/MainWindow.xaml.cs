@@ -337,19 +337,19 @@ namespace thecrypto
 
                 string body = message.HtmlBody ?? message.TextBody;
 
-                if (message.Headers.Contains(Cryptography.ENCRYPTION_HEADER))
+                if (message.Headers.Contains(Cryptography.ENCRYPTION_ID_HEADER))
                 {
                     List<CryptoKey> results = account.keys.Where(k => k.Id.Equals(message.
-                            Headers[Cryptography.ENCRYPTION_HEADER]) && !k.PublicOnly).ToList();
+                            Headers[Cryptography.ENCRYPTION_ID_HEADER]) && !k.PublicOnly).ToList();
                     if (results.Count > 0)
                     {
                         CryptoKey key = results.First();
-
+                        // TODO: обработать неудачу
                         body = Cryptography.decrypt(body, key);
 
                         encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = 
                                 "Расшифровано с помощью \"" + key + "\"";
-                        encryptionStatusLabel.Foreground = Brushes.DarkGreen;
+                        encryptionStatusLabel.Foreground = Brushes.Green;
                     }
                     else
                     {
@@ -363,6 +363,48 @@ namespace thecrypto
                     encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = 
                             "Письмо не зашифровано";
                     encryptionStatusLabel.Foreground = Brushes.Black;
+                }
+
+                if (message.Headers.Contains(Cryptography.SIGNATURE_ID_HEADER))
+                {
+                    List<CryptoKey> results = account.keys.Where(k => k.Id.Equals(message.
+                            Headers[Cryptography.SIGNATURE_ID_HEADER])).ToList();
+                    if (results.Count > 0)
+                    {
+                        CryptoKey key = results.First();
+                        if (Cryptography.verify(body, message.Headers[Cryptography.SIGNATURE_HEADER], key))
+                        {
+                            signatureStatusLabel.Content = signatureStatusLabel.ToolTip =
+                                    "Верифицировано с помощью \"" + key + "\"";
+                            if (message.From.Mailboxes.First().Address.Equals(key.OwnerAddress))
+                                signatureStatusLabel.Foreground = Brushes.Green;
+                            else
+                            {
+                                signatureStatusLabel.Content = signatureStatusLabel.ToolTip +=
+                                        " (отправитель не совпадает)";
+                                signatureStatusLabel.Foreground = Brushes.DarkOrange;
+                            }
+                        }
+                        else
+                        {
+                            signatureStatusLabel.Content = signatureStatusLabel.ToolTip =
+                                    "Подпись распознана с помощью\"" + key +
+                                    "\", однако целостность письма нарушена";
+                            signatureStatusLabel.Foreground = Brushes.DarkRed;
+                        }
+                    }
+                    else
+                    {
+                        signatureStatusLabel.Content = signatureStatusLabel.ToolTip =
+                                "Письмо подписано, но нет подходящего ключа для верификации";
+                        signatureStatusLabel.Foreground = Brushes.Black;
+                    }
+                }
+                else
+                {
+                    signatureStatusLabel.Content = signatureStatusLabel.ToolTip =
+                            "Письмо не подписано";
+                    signatureStatusLabel.Foreground = Brushes.Black;
                 }
 
                 int index = body.IndexOf("<html>", StringComparison.OrdinalIgnoreCase);

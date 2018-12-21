@@ -108,15 +108,21 @@ namespace thecrypto
                 message.Subject = subjectTB.Text.Length > 0 ? subjectTB.Text : "Без темы";
                 message.Body = "<html><meta charset=\"utf-8\"><body>" + bodyHtmlEditor.ContentHtml + "</body></html>";
 
+                CryptoKey signatureKey = signatureCB.SelectedItem as CryptoKey;
+                if (signatureKey != null)
+                {
+                    string signature = Cryptography.sign(message.Body, signatureKey);
+                    message.Headers.Add(Cryptography.SIGNATURE_ID_HEADER, signatureKey.Id);
+                    message.Headers.Add(Cryptography.SIGNATURE_HEADER, signature);
+                }
+
                 CryptoKey encryptionKey = encryptionCB.SelectedItem as CryptoKey;
                 if (encryptionKey != null)
                 {
                     message.Body = Cryptography.encrypt(message.Body, encryptionKey);
-                    message.Headers.Add(Cryptography.ENCRYPTION_HEADER, encryptionKey.Id);
+                    message.Headers.Add(Cryptography.ENCRYPTION_ID_HEADER, encryptionKey.Id);
                 }
 
-                // TODO: подпись
-                
                 message.IsBodyHtml = true;
                 foreach (FileInfo f in attachmentsPanel.Items)
                     message.Attachments.Add(new Attachment(f.FilePath));

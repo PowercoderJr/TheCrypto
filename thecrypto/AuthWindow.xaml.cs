@@ -31,7 +31,7 @@ namespace thecrypto
             }
 
             string saltyDigest = Utils.byteArrayToHexString(Cryptography.
-                    getSHA1(passTB.Password + Cryptography.SALT));
+                    getSha1(passTB.Password + Cryptography.SALT));
             if (!saltyDigest.Equals(expectedDigest))
             {
                 statusLabel.Content = "Неправильный пароль";
@@ -60,7 +60,7 @@ namespace thecrypto
             }
 
             string saltyDigest = Utils.byteArrayToHexString(Cryptography.
-                    getSHA1(passTB.Password + Cryptography.SALT));
+                    getSha1(passTB.Password + Cryptography.SALT));
             Account user = new Account(login, saltyDigest);
             user.Serialize();
             using (StreamWriter fs = new StreamWriter(Account.getAccountsListPath(), true))

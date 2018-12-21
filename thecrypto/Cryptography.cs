@@ -12,11 +12,14 @@ namespace thecrypto
     static class Cryptography
     {
         public const string SALT = "BeLucky";
-        public const string ENCRYPTION_HEADER = "thecrypto-encryption";
+        public const string ENCRYPTION_ID_HEADER = "thecrypto-encryption-id";
+        public const string SIGNATURE_ID_HEADER = "thecrypto-signature-id";
+        public const string SIGNATURE_HEADER = "thecrypto-signature";
         public static readonly Encoding E = Encoding.Unicode;
         private const bool DO_OAEP_PADDING = true;
         private const CipherMode DES_CIPHER_MODE = CipherMode.CBC;
         private const PaddingMode DES_PADDING_MODE = PaddingMode.ISO10126;
+        private static readonly string SIGN_HASH_ALGORITHM_NAME = HashAlgorithmName.SHA1.Name;
 
         public static byte[] getSHA1(byte[] data)
         {
@@ -26,7 +29,7 @@ namespace thecrypto
             return hash;
         }
 
-        public static byte[] getSHA1(string data)
+        public static byte[] getSha1(string data)
         {
             return getSHA1(E.GetBytes(data));
         }
@@ -194,6 +197,50 @@ namespace thecrypto
                 Console.WriteLine(e.ToString());
                 return null;
             }
+        }
+
+        public static string sign(string data, CryptoKey dsaPrivateKey)
+        {
+            byte[] signature;
+            using (DSACryptoServiceProvider dsa = new DSACryptoServiceProvider())
+            {
+                try
+                {
+                    DSAParameters dsaParams;
+                    dsa.FromXmlString(dsaPrivateKey.PrivateKey);
+                    dsaParams = dsa.ExportParameters(true);
+
+                    byte[] hash = getSha1(data);
+                    signature = dsa.SignHash(hash, SIGN_HASH_ALGORITHM_NAME);
+                }
+                catch (Exception ex)
+                {
+                    signature = null;
+                    Utils.showError(ex.Message);
+                }
+            }
+            return signature == null ? null : Utils.byteArrayToHexString(signature);
+        }
+
+        public static bool verify(string data, string signature, CryptoKey dsaPublicKey)
+        {
+            using (DSACryptoServiceProvider dsa = new DSACryptoServiceProvider())
+            {
+                try
+                {
+                    DSAParameters dsaParams;
+                    dsa.FromXmlString(dsaPublicKey.PublicKey);
+                    dsaParams = dsa.ExportParameters(false);
+
+                    byte[] hash = getSha1(data);
+                    return dsa.VerifyHash(hash, SIGN_HASH_ALGORITHM_NAME, Utils.hexStringToByteArray(signature));
+                }
+                catch (Exception ex)
+                {
+                    Utils.showError(ex.Message);
+                }
+            }
+            return false;
         }
     }
 }
