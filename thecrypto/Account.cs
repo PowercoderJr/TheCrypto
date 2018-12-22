@@ -47,7 +47,7 @@ namespace thecrypto
         internal ObservableCollection<CryptoKey> keys;
 
 
-        public Account(string login, string digest="", int currMailbox=-1)
+        public Account(string login, string digest="")
         {
             this.login = login;
             this.digest = digest;

@@ -13,7 +13,8 @@ namespace thecrypto
     [Serializable]
     public class CryptoKey
     {
-        public const string DEFAULT_EXT = ".key";
+        public const string DEFAULT_KEY_EXT = "key";
+        public const string DEFAULT_SIGNATURE_EXT = "sgn";
         public enum Purpose { Encryption, Signature }
 
         public string Name { get; set; }

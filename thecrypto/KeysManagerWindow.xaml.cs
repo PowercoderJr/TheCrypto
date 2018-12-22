@@ -109,8 +109,8 @@ namespace thecrypto
             CryptoKey key = keysLB.SelectedItem as CryptoKey;
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Title = "Сохранить ключ...";
-            sfd.FileName = key.Name + CryptoKey.DEFAULT_EXT;
-            sfd.DefaultExt = CryptoKey.DEFAULT_EXT;
+            sfd.FileName = key.Name + CryptoKey.DEFAULT_KEY_EXT;
+            sfd.DefaultExt = CryptoKey.DEFAULT_KEY_EXT;
             if (sfd.ShowDialog().Value)
                 key.SerializeToFile(sfd.FileName);
         }
@@ -137,24 +137,129 @@ namespace thecrypto
             }
         }
 
+        // TODO: шифрование-дешифрование бинарных файлов заменяет некоторые байты на fdff
         private void encryptBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            // DEBUG
             CryptoKey key = keysLB.SelectedItem as CryptoKey;
-            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            if (key.KeyPurpose == CryptoKey.Purpose.Encryption)
             {
-                // DEBUG
-                /*var crypt = Cryptography.encrypt("Hello world", rsa.ExportParameters(false));
-                var plain = Cryptography.decrypt(crypt, rsa.ExportParameters(true));*/
-            }
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Title = "Зашифровать файл...";
+                if (ofd.ShowDialog().Value)
+                {
+                    byte[] input = File.ReadAllBytes(ofd.FileName);
+                    string output = Cryptography.Encrypt(Cryptography.E.GetString(input), key);
 
-            return;
-            throw new NotImplementedException();
+                    SaveFileDialog sfd = new SaveFileDialog();
+                    sfd.Title = "Сохранить зашифрованный файл...";
+                    if (sfd.ShowDialog().Value)
+                        File.WriteAllText(sfd.FileName, output);
+                }
+            }
+            else if(key.KeyPurpose == CryptoKey.Purpose.Signature)
+            {
+                if (key.PublicOnly)
+                {
+                    Utils.ShowWarning("Для создания подписи необходимо иметь закрытый ключ");
+                    return;
+                }
+
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Title = "Подписать файл...";
+                if (ofd.ShowDialog().Value)
+                {
+                    byte[] input = File.ReadAllBytes(ofd.FileName);
+                    string output = Cryptography.Sign(Cryptography.E.GetString(input), key);
+
+                    SaveFileDialog sfd = new SaveFileDialog();
+                    sfd.Title = "Сохранить подпись файла...";
+                    sfd.DefaultExt = CryptoKey.DEFAULT_SIGNATURE_EXT;
+                    if (sfd.ShowDialog().Value)
+                        File.WriteAllText(sfd.FileName, output);
+                }
+            }
+            else
+            {
+                throw new NotImplementedException("Как Вы здесь оказались?");
+            }
         }
 
         private void decryptBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            throw new NotImplementedException();
+            CryptoKey key = keysLB.SelectedItem as CryptoKey;
+            if (key.KeyPurpose == CryptoKey.Purpose.Encryption)
+            {
+                if (key.PublicOnly)
+                {
+                    Utils.ShowWarning("Для расшифрования файла необходимо иметь закрытый ключ");
+                    return;
+                }
+
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.Title = "Расшифровать файл...";
+                if (ofd.ShowDialog().Value)
+                {
+                    string input = File.ReadAllText(ofd.FileName);
+                    byte[] output;
+                    try
+                    {
+                        output = Cryptography.E.GetBytes(Cryptography.Decrypt(input, key));
+                    }
+                    catch (Exception ex)
+                    {
+                        output = null;
+                    }
+
+                    if (output == null)
+                        Utils.ShowError("Не удалось расшифровать файл");
+                    else
+                    {
+                        SaveFileDialog sfd = new SaveFileDialog();
+                        sfd.Title = "Сохранить расшифрованный файл...";
+                        if (sfd.ShowDialog().Value)
+                            File.WriteAllBytes(sfd.FileName, output);
+                    }
+                }
+            }
+            else if (key.KeyPurpose == CryptoKey.Purpose.Signature)
+            {
+                OpenFileDialog ofd1 = new OpenFileDialog();
+                ofd1.Title = "Открыть файл для проверки подписи...";
+                if (ofd1.ShowDialog().Value)
+                {
+                    OpenFileDialog ofd2 = new OpenFileDialog();
+                    ofd2.Title = "Открыть файл подписи...";
+                    ofd2.DefaultExt = CryptoKey.DEFAULT_SIGNATURE_EXT;
+                    if (ofd2.ShowDialog().Value)
+                    {
+                        byte[] input = File.ReadAllBytes(ofd1.FileName);
+                        string signature = File.ReadAllText(ofd2.FileName);
+                        bool? result;
+                        try
+                        {
+                            result = Cryptography.Verify(Cryptography.E.GetString(input), signature, key);
+                        }
+                        catch (Exception ex)
+                        {
+                            result = null;
+                        }
+
+                        if (result == null)
+                            Utils.ShowError("Не удалось проверить подпись файла");
+                        else
+                        {
+                            if (result.Value)
+                                Utils.ShowInfo("Файл успешно прошёл верификацию");
+                            else
+                                Utils.ShowError("Верификация не пройдена");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                throw new NotImplementedException("Как Вы здесь оказались?");
+            }
         }
 
         private void filterTB_TextChanged(object sender, TextChangedEventArgs e)

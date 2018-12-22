@@ -5,19 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:thecrypto"
         mc:Ignorable="d"
-        Title="The Crypto" Height="300" Width="500">
+        Title="The Crypto" Height="340" Width="500">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="140"/>
             <RowDefinition Height="42"/>
             <RowDefinition Height="42"/>
             <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
+        <Image Grid.ColumnSpan="2" Margin="20" Source="Resources/thecrypto.png"/>
         <TextBox Name="loginTB" HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="2" TextWrapping="NoWrap" VerticalAlignment="Stretch" Margin="12, 4, 12, 4" FontSize="18" />
         <PasswordBox Name="passTB" HorizontalAlignment="Stretch" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Stretch" Margin="12, 4, 12, 4" FontSize="18"/>
         <Button Name="signInBtn" Content="Войти" HorizontalAlignment="Stretch" Margin="12,4,6,4" Grid.Row="3" Grid.Column="0" VerticalAlignment="Stretch" Click="signInBtn_Click" IsDefault="True"/>

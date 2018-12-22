@@ -14,6 +14,7 @@ namespace thecrypto
         {
             MessageBox.Show(message, "Операция успешно завершена неудачей", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+
         public static void ShowWarning(string message)
         {
             MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -22,6 +23,11 @@ namespace thecrypto
         public static MessageBoxResult ShowConfirmation(string message)
         {
             return MessageBox.Show(message, "Подтвердите действие", MessageBoxButton.YesNo, MessageBoxImage.Question);
+        }
+
+        public static void ShowInfo(string message)
+        {
+            MessageBox.Show(message, "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public static bool ValidateEmail(this string s)

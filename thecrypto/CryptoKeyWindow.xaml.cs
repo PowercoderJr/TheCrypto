@@ -89,7 +89,7 @@ namespace thecrypto
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = "Загрузить ключ...";
-            ofd.DefaultExt = CryptoKey.DEFAULT_EXT;
+            ofd.DefaultExt = CryptoKey.DEFAULT_KEY_EXT;
             if (ofd.ShowDialog().Value)
                 filepathTB.Text = ofd.FileName;
         }

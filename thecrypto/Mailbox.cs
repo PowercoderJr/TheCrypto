@@ -20,8 +20,6 @@ namespace thecrypto
         public string ImapDomain { get; set; }
         public int ImapPort { get; set; }
 
-        //internal ObservableCollection<Send_box> send_adresses = new ObservableCollection<Send_box>();
-
         public Mailbox(string name, string address, string password)
         {
             this.Name = name;

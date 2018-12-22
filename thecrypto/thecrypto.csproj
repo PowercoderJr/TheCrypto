@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.2.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.2\lib\BouncyCastle.Crypto.dll</HintPath>
@@ -42,15 +45,6 @@
     </Reference>
     <Reference Include="MimeKit, Version=2.1.0.0, Culture=neutral, PublicKeyToken=bede1c8a46c66814, processorArchitecture=MSIL">
       <HintPath>..\packages\MimeKit.2.1.1\lib\net45\MimeKit.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenPop, Version=2.0.6.1120, Culture=neutral, PublicKeyToken=6bdb97f144b7efc8, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenPop.NET.2.0.6.1120\lib\net40\OpenPop.dll</HintPath>
-    </Reference>
-    <Reference Include="Rebex.Common, Version=2.5.6874.0, Culture=neutral, PublicKeyToken=1c4638788972655d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rebex.Common.2.5.6874\lib\net40\Rebex.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Rebex.Mail, Version=2.0.6874.0, Culture=neutral, PublicKeyToken=1c4638788972655d, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rebex.Mail.2.0.6874\lib\net40\Rebex.Mail.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -225,6 +219,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\rename.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\thecrypto.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

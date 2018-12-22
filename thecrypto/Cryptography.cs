@@ -12,10 +12,10 @@ namespace thecrypto
     static class Cryptography
     {
         public const string SALT = "BeLucky";
-        public const string KEY_DELIVERY_HEADER = "thecrypto-key-delivery-id";
-        public const string ENCRYPTION_ID_HEADER = "thecrypto-encryption-id";
-        public const string SIGNATURE_ID_HEADER = "thecrypto-signature-id";
-        public const string SIGNATURE_HEADER = "thecrypto-signature";
+        public const string KEY_DELIVERY_HEADER = "X-thecrypto-key-delivery-id";
+        public const string ENCRYPTION_ID_HEADER = "X-thecrypto-encryption-id";
+        public const string SIGNATURE_ID_HEADER = "X-thecrypto-signature-id";
+        public const string SIGNATURE_HEADER = "X-thecrypto-signature";
         public static readonly Encoding E = Encoding.Unicode;
         private const bool DO_OAEP_PADDING = true;
         private const CipherMode DES_CIPHER_MODE = CipherMode.CBC;
@@ -59,8 +59,8 @@ namespace thecrypto
             }
             catch (Exception ex)
             {
-                //Utils.showError(ex.Message);
-                throw;
+                Utils.ShowError(ex.Message);
+                //throw;
                 return null;
             }
 
@@ -96,8 +96,8 @@ namespace thecrypto
             }
             catch (Exception ex)
             {
-                //Utils.showError(ex.Message);
-                throw;
+                Utils.ShowError(ex.Message);
+                //throw;
                 return null;
             }
 

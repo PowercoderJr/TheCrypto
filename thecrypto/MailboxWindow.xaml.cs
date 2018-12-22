@@ -8,9 +8,9 @@ namespace thecrypto
     public partial class MailboxWindow : Window
     {
         public const string DEFAULT_SMTP_SUBDOMAIN = "smtp.";
-        public const string DEFAULT_SMTP_PORT= "587";
+        public const string DEFAULT_SMTP_PORT = "587";
         public const string DEFAULT_IMAP_SUBDOMAIN = "imap.";
-        public const string DEFAULT_IMAP_PORT= "993";
+        public const string DEFAULT_IMAP_PORT = "993";
 
         internal Mailbox mailbox;
 

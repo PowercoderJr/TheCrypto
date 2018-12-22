@@ -23,7 +23,7 @@ namespace thecrypto
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : Window, INotifyPropertyChanged, IDisposable
     {
         private static DataTemplate letterDT;
 
@@ -167,7 +167,7 @@ namespace thecrypto
                     string mailboxPath = System.IO.Path.Combine(account.GetAccountPath(), mailbox.Address);
                     if (Directory.Exists(mailboxPath))
                         Directory.Delete(mailboxPath, true);
-                    Utils.RemoveByCondition(account.keys, k => k.OwnerAddress.Equals(mailbox.Address));
+                    account.keys.RemoveByCondition(k => k.OwnerAddress.Equals(mailbox.Address));
                     account.Serialize();
 
                     if (mailbox == CurrMailbox)
@@ -212,9 +212,9 @@ namespace thecrypto
         {
             DisposeImap();
             imap = new ImapClient();
-            imap.Connect(mailbox.ImapDomain, mailbox.ImapPort, account.useSsl);
             try
             {
+                imap.Connect(mailbox.ImapDomain, mailbox.ImapPort, account.useSsl);
                 imap.Authenticate(mailbox.Address, mailbox.Password);
                 /*Utils.showWarning("Не удалось выполнить вход в " + mailbox.Address + ". Проверьте правильность адреса и пароля.");
             else*/
@@ -490,6 +490,7 @@ namespace thecrypto
         {
             lettersTV.Items.Clear();
             DownloadLetters();
+            DisplayLetters();
         }
 
         private void keyManagerBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -527,6 +528,7 @@ namespace thecrypto
                 if (imap.IsConnected)
                     imap.Disconnect(false);
                 imap.Dispose();
+                imap = null;
             }
         }
 
@@ -534,5 +536,9 @@ namespace thecrypto
         {
             DisposeImap();
         }
+
+        public void Dispose(bool dummy) => DisposeImap();
+
+        public void Dispose() => Dispose(true);
     }
 }
