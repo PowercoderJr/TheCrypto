@@ -12,11 +12,9 @@ using System.Collections.ObjectModel;
 
 namespace thecrypto
 {
-    // TODO: пересмотреть класс
     [Serializable]
-    public class Account : ICloneable
+    public class Account
     {
-        [NonSerialized]
         public const string ACCOUNTS_DIR_NAME = "accounts";
         public const string ACCOUNTS_LIST_FILENAME = "list.txt";
         public const string ACCOUNT_FILENAME = "account.tcr";
@@ -43,27 +41,18 @@ namespace thecrypto
 
         internal string login;
         internal string digest;
-        internal int currMailbox;
+        internal bool useSsl;
 
         internal ObservableCollection<Mailbox> mailboxes;
         internal ObservableCollection<CryptoKey> keys;
 
-        public bool Use_save_post = false;
-        public int count = 5;
-
-        //public byte curr_proto = 0;
-
-        public bool useSsl = true;
-
-        public bool Crypt = false;
-        public bool DS = false;
 
         public Account(string login, string digest="", int currMailbox=-1)
         {
             this.login = login;
             this.digest = digest;
-            this.currMailbox = currMailbox;
 
+            this.useSsl = true;
             this.mailboxes = new ObservableCollection<Mailbox>();
             this.keys = new ObservableCollection<CryptoKey>();
         }
@@ -78,31 +67,25 @@ namespace thecrypto
             return getAccountFilePath(login);
         }
 
-        public void Serialize()
+        public void serialize()
         {
             Directory.CreateDirectory(Path.Combine(ACCOUNTS_DIR_NAME, login));
             using (FileStream fstream = File.Open(getAccountFilePath(), FileMode.Create))
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 bf.Serialize(fstream, this);
-                fstream.Flush();
             }
         }
 
-        // TODO: зачем нестатичкеский / зачем возвращает объект?
-        public Account Deserialize()
+        public static Account deserialize(string login)
         {
             Account account = null;
-            FileStream fstream = File.Open(getAccountFilePath(), FileMode.Open);
-            BinaryFormatter binaryFormatter = new BinaryFormatter();
-            account = (Account)binaryFormatter.Deserialize(fstream);
-            fstream.Close();
+            using (FileStream fstream = File.Open(getAccountFilePath(login), FileMode.Open))
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                account = binaryFormatter.Deserialize(fstream) as Account;
+            }
             return account;
-        }
-
-        public object Clone()
-        {
-            return MemberwiseClone();
         }
     }
 }

@@ -33,7 +33,7 @@
             <local:AutoGreyableImage x:Name="saveKeyBtn" Grid.Column="3" Source="Resources/save.png" ToolTip="Сохранить ключ в файл" Cursor="Hand" Style="{StaticResource enabledIfSelected}" MouseLeftButtonUp="saveKeyBtn_MouseLeftButtonUp"/>
             <local:AutoGreyableImage x:Name="sendKeyBtn" Grid.Column="4" Source="Resources/letter.png" ToolTip="Отправить открытый ключ" Cursor="Hand" Style="{StaticResource enabledIfSelected}" MouseLeftButtonUp="sendKeyBtn_MouseLeftButtonUp"/>
             <local:AutoGreyableImage x:Name="encryptBtn" Grid.Column="5" Source="Resources/encrypt.png" ToolTip="Зашифровать/подписать файл" Cursor="Hand" Style="{StaticResource enabledIfSelected}" MouseLeftButtonUp="encryptBtn_MouseLeftButtonUp"/>
-            <local:AutoGreyableImage x:Name="decryptBtn" Grid.Column="6" Source="Resources/decrypt.png" ToolTip="Расшифровать/верифицировать файл" Cursor="Hand" MouseLeftButtonUp="decryptBtn_MouseLeftButtonUp"/>
+            <local:AutoGreyableImage x:Name="decryptBtn" Grid.Column="6" Source="Resources/decrypt.png" ToolTip="Расшифровать/верифицировать файл" Cursor="Hand" Style="{StaticResource enabledIfSelected}" MouseLeftButtonUp="decryptBtn_MouseLeftButtonUp"/>
         </Grid>
         <ListBox x:Name="keysLB" Margin="8,8,8,0" BorderBrush="#FF828790" BorderThickness="1" HorizontalContentAlignment="Stretch">
             <ListBox.ItemTemplate>

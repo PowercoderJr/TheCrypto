@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace thecrypto
 {
@@ -50,11 +52,47 @@ namespace thecrypto
             this.DateTime = DateTime.Now;
         }
 
+        /*public static MemoryStream serializeToStream(CryptoKey key)
+        {
+            MemoryStream stream = new MemoryStream();
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(stream, key);
+            return stream;
+        }
+
+        public static object deserializeFromStream(MemoryStream stream)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            stream.Seek(0, SeekOrigin.Begin);
+            object o = formatter.Deserialize(stream);
+            return o;
+        }*/
+
         public CryptoKey getPublicCryptoKey()
         {
             CryptoKey output = new CryptoKey(PublicKey, null, Name, OwnerAddress, KeyPurpose);
             output.DateTime = this.DateTime;
             return output;
+        }
+
+        public void serializeToFile(string filename)
+        {
+            using (FileStream fstream = File.Open(filename, FileMode.Create))
+            {
+                BinaryFormatter bf = new BinaryFormatter();
+                bf.Serialize(fstream, this);
+            }
+        }
+
+        public static CryptoKey deserializeFromFile(string filename)
+        {
+            CryptoKey key = null;
+            using (FileStream fstream = File.Open(filename, FileMode.Open))
+            {
+                BinaryFormatter binaryFormatter = new BinaryFormatter();
+                key = binaryFormatter.Deserialize(fstream) as CryptoKey;
+            }
+            return key;
         }
 
         public override string ToString()

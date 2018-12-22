@@ -125,7 +125,7 @@ namespace thecrypto
                 if (!account.mailboxes.Any(item => item.Address.Equals(address)))
                 {
                     account.mailboxes.Add(mw.mailbox);
-                    account.Serialize();
+                    account.serialize();
                 }
                 else
                 {
@@ -149,7 +149,7 @@ namespace thecrypto
                     account.mailboxes.Insert(index, mw.mailbox);
                     mailboxesLB.SelectedIndex = index;
                     // TEMP/
-                    account.Serialize();
+                    account.serialize();
                 }
             }
         }
@@ -166,7 +166,7 @@ namespace thecrypto
                     " из списка почтовых ящиков?") == MessageBoxResult.Yes)
                 {
                     account.mailboxes.RemoveAt(mailboxesLB.SelectedIndex);
-                    account.Serialize();
+                    account.serialize();
 
                     if (mailbox == CurrMailbox)
                     {
@@ -304,6 +304,7 @@ namespace thecrypto
         {
             CurrMessage = message;
             if (message == null)
+            // Если нужно очистить форму
             {
                 fromToDatetimeLabel.Content = fromToDatetimeLabel.ToolTip = null;
                 subjectLabel.Content = subjectLabel.ToolTip = null;
@@ -314,9 +315,11 @@ namespace thecrypto
                 replyBtn.IsEnabled = false;
             }
             else
+            // Если нужно открыть письмо
             {
-                StringBuilder fromToDatetime = new StringBuilder(message.Date + 
-                        " от " + message.From.Mailboxes.First().Name + 
+                // Заполнение полей из заголовка
+                StringBuilder fromToDatetime = new StringBuilder(message.Date +
+                        " от " + message.From.Mailboxes.First().Name +
                         " <" + message.From.Mailboxes.First().Address + "> для ");
                 foreach (MailboxAddress receiver in message.To)
                     fromToDatetime.Append(receiver.Name +
@@ -332,12 +335,10 @@ namespace thecrypto
                 }
                 fromToDatetimeLabel.Content = fromToDatetimeLabel.ToolTip = fromToDatetime;
                 subjectLabel.Content = subjectLabel.ToolTip = message.Subject;
-                encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = "Hello";
-                signatureStatusLabel.Content = signatureStatusLabel.ToolTip = "World";
 
                 string body = message.HtmlBody ?? message.TextBody;
-
                 if (message.Headers.Contains(Cryptography.ENCRYPTION_ID_HEADER))
+                // Если письмо зашифровано
                 {
                     List<CryptoKey> results = account.keys.Where(k => k.Id.Equals(message.
                             Headers[Cryptography.ENCRYPTION_ID_HEADER]) && !k.PublicOnly).ToList();
@@ -347,25 +348,26 @@ namespace thecrypto
                         // TODO: обработать неудачу
                         body = Cryptography.decrypt(body, key);
 
-                        encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = 
+                        encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip =
                                 "Расшифровано с помощью \"" + key + "\"";
                         encryptionStatusLabel.Foreground = Brushes.Green;
                     }
                     else
                     {
-                        encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = 
+                        encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip =
                                 "Письмо зашифровано, ключ не найден";
                         encryptionStatusLabel.Foreground = Brushes.DarkRed;
                     }
                 }
                 else
                 {
-                    encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip = 
+                    encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip =
                             "Письмо не зашифровано";
                     encryptionStatusLabel.Foreground = Brushes.Black;
                 }
 
                 if (message.Headers.Contains(Cryptography.SIGNATURE_ID_HEADER))
+                // Если письмо подписано
                 {
                     List<CryptoKey> results = account.keys.Where(k => k.Id.Equals(message.
                             Headers[Cryptography.SIGNATURE_ID_HEADER])).ToList();
@@ -406,17 +408,41 @@ namespace thecrypto
                             "Письмо не подписано";
                     signatureStatusLabel.Foreground = Brushes.Black;
                 }
-
+                
+                // Отображение тела письма
                 int index = body.IndexOf("<html>", StringComparison.OrdinalIgnoreCase);
                 if (index < 0)
-                    body = "<html><meta charset=\"utf-8\"><body>" + body + "</body></html>";
+                    body = "<html><meta charset=\"" + App.HTML_CHARSET + "\"><body>" + body + "</body></html>";
                 else
                     body = body.Insert(index + 6, "<meta charset=\"" + App.HTML_CHARSET + "\">");
+                // TODO: превратить переносы строк в <br>, если письмо не HTML
                 letterWB.NavigateToString(body);
 
-                attachmentsPanel.Items.Clear();
-                foreach (MimeEntity attachment in message.Attachments)
-                    attachmentsPanel.Items.Add(attachment);
+                if (message.Headers.Contains(Cryptography.KEY_DELIVERY_HEADER))
+                // Если это письмо - доставка ключа
+                {
+                    // Получить объект ключа
+                    MimeEntity attachment = message.Attachments.First();
+                    string tmpFile = System.IO.Path.GetTempFileName();
+                    saveAttachment(attachment, tmpFile);
+                    CryptoKey key = CryptoKey.deserializeFromFile(tmpFile);
+
+                    if (Utils.showConfirmation("Добавить ключ \"" + key + "\" в библиотеку ключей?") == MessageBoxResult.Yes)
+                    {
+                        if (KeysManagerWindow.addKey(account, key))
+                            account.serialize();
+                        else
+                            Utils.showWarning("Такой ключ уже есть в библиотеке ключей");
+                    }
+                }
+                else
+                // Если это письмо обыкновенное
+                {
+                    // Отображение прикреплений
+                    attachmentsPanel.Items.Clear();
+                    foreach (MimeEntity attachment in message.Attachments)
+                        attachmentsPanel.Items.Add(attachment);
+                }
                 replyBtn.IsEnabled = true;
             }
         }
@@ -428,19 +454,22 @@ namespace thecrypto
             sfd.Title = "Сохранить файл...";
             sfd.FileName = attachment.ContentDisposition?.FileName ?? attachment.ContentType.Name;
             if (sfd.ShowDialog(this).Value)
+                saveAttachment(attachment, sfd.FileName);
+        }
+
+        private void saveAttachment(MimeEntity attachment, string filepath)
+        {
+            using (var stream = File.Create(filepath))
             {
-                using (var stream = File.Create(sfd.FileName))
+                if (attachment is MessagePart)
                 {
-                    if (attachment is MessagePart)
-                    {
-                        var rfc822 = (MessagePart)attachment;
-                        rfc822.Message.WriteTo(stream);
-                    }
-                    else
-                    {
-                        var part = (MimePart)attachment;
-                        part.Content.DecodeTo(stream);
-                    }
+                    var rfc822 = (MessagePart)attachment;
+                    rfc822.Message.WriteTo(stream);
+                }
+                else
+                {
+                    var part = (MimePart)attachment;
+                    part.Content.DecodeTo(stream);
                 }
             }
         }

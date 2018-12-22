@@ -38,8 +38,7 @@ namespace thecrypto
                 return;
             }
 
-            Account account = new Account(login);
-            account = account.Deserialize();
+            Account account = Account.deserialize(login);
             start(account);
         }
 
@@ -62,7 +61,7 @@ namespace thecrypto
             string saltyDigest = Utils.byteArrayToHexString(Cryptography.
                     getSha1(passTB.Password + Cryptography.SALT));
             Account user = new Account(login, saltyDigest);
-            user.Serialize();
+            user.serialize();
             using (StreamWriter fs = new StreamWriter(Account.getAccountsListPath(), true))
             {
                 fs.WriteLine(user.login);

@@ -26,18 +26,19 @@ namespace thecrypto
     {
         private class FileInfo
         {
-            private string path;
-            public string FilePath => path;
-            public string FileName => System.IO.Path.GetFileName(path);
+            private string fullName;
+            public string FullName => fullName;
+            public string DisplayName => System.IO.Path.GetFileName(fullName);
 
-            public FileInfo(string path)
+            public FileInfo(string fullName)
             {
-                this.path = path;
+                this.fullName = fullName;
             }
         }
 
         private Mailbox mailbox;
         private bool useSsl;
+        public CryptoKey KeyToDeliver { get; set; }
 
         public WriteLetterWindow(Mailbox mailbox, ObservableCollection<CryptoKey> keys, bool useSsl)
         {
@@ -48,10 +49,16 @@ namespace thecrypto
             senderNameTB.Text = mailbox.Name;
             sendetAddressTB.Text = "<" + mailbox.Address + ">";
 
-            ObservableCollection<CryptoKey> encryptionKeys = getPrivateKeys(keys, CryptoKey.Purpose.Encryption);
+            ObservableCollection<CryptoKey> encryptionKeys = selectKeys(keys, CryptoKey.Purpose.Encryption, true);
             encryptionCB.ItemsSource = encryptionKeys;
-            ObservableCollection<CryptoKey> signatureKeys = getPrivateKeys(keys, CryptoKey.Purpose.Signature);
+            ObservableCollection<CryptoKey> signatureKeys = selectKeys(keys, CryptoKey.Purpose.Signature, false);
             signatureCB.ItemsSource = signatureKeys;
+        }
+
+        public void attachFile(string fullName)
+        {
+            FileInfo f = new FileInfo(fullName);
+            attachmentsPanel.Items.Add(f);
         }
 
         private void attachBtn_Click(object sender, RoutedEventArgs e)
@@ -60,18 +67,14 @@ namespace thecrypto
             ofd.Title = "Прикрепить файл...";
             ofd.Multiselect = true;
             if (ofd.ShowDialog().Value)
-            {
                 foreach (string filename in ofd.FileNames)
-                {
-                    FileInfo fileInfo = new FileInfo(filename);
-                    attachmentsPanel.Items.Add(fileInfo);
-                }
-            }
+                    attachFile(filename);
         }
 
         private void removeAttachmentBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            attachmentsPanel.Items.Remove((sender as FrameworkElement).DataContext);
+            if (KeyToDeliver == null)
+                attachmentsPanel.Items.Remove((sender as FrameworkElement).DataContext);
         }
 
         private void sendBtn_Click(object s, RoutedEventArgs e)
@@ -106,7 +109,40 @@ namespace thecrypto
                 if (recipientsBccTB.Text.Trim().Length > 0)
                     message.Bcc.Add(recipientsBccTB.Text);
                 message.Subject = subjectTB.Text.Length > 0 ? subjectTB.Text : "Без темы";
-                message.Body = "<html><meta charset=\"utf-8\"><body>" + bodyHtmlEditor.ContentHtml + "</body></html>";
+
+                if (KeyToDeliver != null)
+                {
+                    message.Headers.Add(Cryptography.KEY_DELIVERY_HEADER, "public");
+
+                    string filename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "tcr-public.key");
+                    KeyToDeliver.serializeToFile(filename);
+                    attachFile(filename);
+
+                    string purpuse;
+                    if (KeyToDeliver.KeyPurpose == CryptoKey.Purpose.Encryption)
+                        purpuse = "для шифрования";
+                    else if (KeyToDeliver.KeyPurpose == CryptoKey.Purpose.Signature)
+                        purpuse = "для верификации цифровой подписи";
+                    else
+                        throw new NotImplementedException("Как Вы здесь оказались?");
+
+                    string ownerMatch;
+                    if (KeyToDeliver.OwnerAddress.Equals(mailbox.Address))
+                        ownerMatch = "<span style=\"color: " + Utils.colorToHexString(Colors.Green) +
+                                "\">ключ принадлежит отправителю</span>";
+                    else
+                        ownerMatch = "<span style=\"color: " + Utils.colorToHexString(Colors.DarkOrange) +
+                                "\">не совпадает с адресом отправителя</span>";
+
+                    StringBuilder body = new StringBuilder();
+                    body.Append("Это письмо содержит открытый ключ " + purpuse + "<br>");
+                    body.Append("Адрес владельца ключа: " + KeyToDeliver.OwnerAddress + " - " + ownerMatch + "<br>");
+                    body.Append("Дата и время создания ключа: " + KeyToDeliver.DateTime + "<br>");
+                    body.Append("<br>");
+                    body.Append("Приймите запрос в The Crypto, чтобы добавить этот ключ в Вашу библиотеку ключей");
+                    bodyHtmlEditor.ContentHtml = body.ToString();
+                }
+                message.Body = "<html><meta charset=\"" + App.HTML_CHARSET + "\"><body>" + bodyHtmlEditor.ContentHtml + "</body></html>";
 
                 CryptoKey signatureKey = signatureCB.SelectedItem as CryptoKey;
                 if (signatureKey != null)
@@ -125,7 +161,7 @@ namespace thecrypto
 
                 message.IsBodyHtml = true;
                 foreach (FileInfo f in attachmentsPanel.Items)
-                    message.Attachments.Add(new Attachment(f.FilePath));
+                    message.Attachments.Add(new Attachment(f.FullName));
 
                 try
                 {
@@ -144,11 +180,11 @@ namespace thecrypto
             }
         }
 
-        private ObservableCollection<CryptoKey> getPrivateKeys(
-                ObservableCollection<CryptoKey> keys, CryptoKey.Purpose purpose)
+        private ObservableCollection<CryptoKey> selectKeys(ObservableCollection<CryptoKey> keys,
+            CryptoKey.Purpose purpose, bool includePublic)
         {
             return new ObservableCollection<CryptoKey>(keys.Where(key =>
-                !key.PublicOnly && key.KeyPurpose == purpose));
+                key.KeyPurpose == purpose && (includePublic || !key.PublicOnly)));
         }
 
         private void encryptChb_Unchecked(object sender, RoutedEventArgs e)

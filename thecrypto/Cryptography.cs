@@ -12,6 +12,7 @@ namespace thecrypto
     static class Cryptography
     {
         public const string SALT = "BeLucky";
+        public const string KEY_DELIVERY_HEADER = "thecrypto-key-delivery-id";
         public const string ENCRYPTION_ID_HEADER = "thecrypto-encryption-id";
         public const string SIGNATURE_ID_HEADER = "thecrypto-signature-id";
         public const string SIGNATURE_HEADER = "thecrypto-signature";

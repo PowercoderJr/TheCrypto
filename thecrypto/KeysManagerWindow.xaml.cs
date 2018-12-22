@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
@@ -36,14 +37,46 @@ namespace thecrypto
             filterKeys();
         }
 
+        public static bool addKey(Account account, CryptoKey key)
+        {
+            // TODO: вдруг ID разных ключей совпадут
+            List<CryptoKey> results = account.keys.Where(k => k.Id == key.Id).ToList();
+            if (results.Count == 0)
+            {
+                account.keys.Add(key);
+                return true;
+            }
+            else
+            {
+                CryptoKey existing = results.First();
+                if (existing.PublicOnly && !key.PublicOnly)
+                {
+                    int index = account.keys.IndexOf(existing);
+                    account.keys.RemoveAt(index);
+                    account.keys.Insert(index, key);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         private void addKeyBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             CryptoKeyWindow ckw = new CryptoKeyWindow(account.mailboxes);
             if (ckw.ShowDialog().Value)
             {
-                account.keys.Add(ckw.key);
-                filterKeys();
-                account.Serialize();
+                if (addKey(account, ckw.key))
+                {
+                    filterKeys();
+                    account.serialize();
+                }
+                else
+                {
+                    Utils.showWarning("Такой ключ уже есть в библиотеке ключей");
+                }
             }
         }
 
@@ -55,7 +88,7 @@ namespace thecrypto
             {
                 account.keys.Remove(key);
                 filteredKeys.Remove(key);
-                account.Serialize();
+                account.serialize();
             }
         }
 
@@ -67,7 +100,7 @@ namespace thecrypto
             {
                 key.Name = asw.valueTB.Text.Trim();
                 filterKeys();
-                account.Serialize();
+                account.serialize();
             }
         }
 
@@ -79,18 +112,29 @@ namespace thecrypto
             sfd.FileName = key.Name + CryptoKey.DEFAULT_EXT;
             sfd.DefaultExt = CryptoKey.DEFAULT_EXT;
             if (sfd.ShowDialog().Value)
-                using (FileStream fstream = File.Open(sfd.FileName, FileMode.Create))
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(fstream, key);
-                    fstream.Flush();
-                }
+                key.serializeToFile(sfd.FileName);
         }
 
         private void sendKeyBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //string filename = System.IO.Path.GetTempFileName();
-            throw new NotImplementedException();
+            AskItemWindow aiw = new AskItemWindow("Выберите адрес отправителя:",
+                    new ObservableCollection<object>(account.mailboxes));
+            if (aiw.ShowDialog().Value)
+            {
+                WriteLetterWindow wlw = new WriteLetterWindow(aiw.itemsCB.SelectedItem as Mailbox,
+                        account.keys, account.useSsl);
+                wlw.bodyHtmlEditor.IsEnabled =
+                        wlw.attachBtn.IsEnabled =
+                        wlw.encryptChb.IsEnabled =
+                        wlw.encryptionCB.IsEnabled =
+                        wlw.signChb.IsEnabled =
+                        wlw.signatureCB.IsEnabled = false;
+
+                CryptoKey key = keysLB.SelectedItem as CryptoKey;
+                wlw.KeyToDeliver = key.getPublicCryptoKey();
+
+                wlw.Show();
+            }
         }
 
         private void encryptBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
