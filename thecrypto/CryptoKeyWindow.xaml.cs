@@ -30,6 +30,7 @@ namespace thecrypto
         {
             InitializeComponent();
             ownerCB.ItemsSource = mailboxes;
+            nameTB.Focus();
         }
 
         private void okBtn_Click(object sender, RoutedEventArgs e)

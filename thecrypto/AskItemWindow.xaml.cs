@@ -32,6 +32,7 @@ namespace thecrypto
             itemsCB.ItemsSource = items;
             itemsCB.SelectedItem = value;
             this.canBeNull = canBeNull;
+            itemsCB.Focus();
         }
 
         private void okBtn_Click(object sender, RoutedEventArgs e)

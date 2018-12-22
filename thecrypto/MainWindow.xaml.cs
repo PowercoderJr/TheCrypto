@@ -156,16 +156,18 @@ namespace thecrypto
 
         private void removeMailboxBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            // TODO: закрыть текущий ящик, если его удалили
-            // TODO: удалить приватные ключи ящика
-            // TODO: удалить сохранённые письма ящика
             Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
             if (mailbox != null)
             {
                 if (Utils.showConfirmation("Вы действительно хотите удалить " + mailboxesLB.SelectedItem +
-                    " из списка почтовых ящиков?") == MessageBoxResult.Yes)
+                        " из списка почтовых ящиков? Сохранённые письма и ключи этого ящика также будут удалены.")
+                        == MessageBoxResult.Yes)
                 {
                     account.mailboxes.RemoveAt(mailboxesLB.SelectedIndex);
+                    string mailboxPath = System.IO.Path.Combine(account.getAccountPath(), mailbox.Address);
+                    if (Directory.Exists(mailboxPath))
+                        Directory.Delete(mailboxPath, true);
+                    Utils.removeByCondition(account.keys, k => k.OwnerAddress.Equals(mailbox.Address));
                     account.serialize();
 
                     if (mailbox == CurrMailbox)
@@ -279,14 +281,17 @@ namespace thecrypto
 
             TreeViewItem twi = new TreeViewItem();
             string[] messages = Directory.GetFiles(dirPath, "*.eml");
+            List<MimeMessage> buf = new List<MimeMessage>();
             foreach (string message in messages)
-                twi.Items.Add(MimeMessage.Load(message));
+                buf.Add(MimeMessage.Load(message));
+            buf.Reverse();
+            foreach (MimeMessage message in buf)
+                twi.Items.Add(message);
 
             twi.Header = (dirPath.Substring(dirPath.LastIndexOf('\\') + 1)) + (twi.Items.Count > 0 ?
                     (" (" + twi.Items.Count + ")") : "");
             twi.ItemTemplate = letterDT;
-
-            // TODO: обратить порядок писем
+            
             collection.Add(twi);
         }
 

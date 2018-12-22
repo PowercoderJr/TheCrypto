@@ -11,6 +11,7 @@ namespace thecrypto
         public AuthWindow()
         {
             InitializeComponent();
+            loginTB.Focus();
         }
 
         private void signInBtn_Click(object sender, RoutedEventArgs e)

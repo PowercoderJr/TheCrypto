@@ -20,8 +20,8 @@
         </Grid.RowDefinitions>
         <TextBox Name="loginTB" HorizontalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="2" TextWrapping="NoWrap" VerticalAlignment="Stretch" Margin="12, 4, 12, 4" FontSize="18" />
         <PasswordBox Name="passTB" HorizontalAlignment="Stretch" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Stretch" Margin="12, 4, 12, 4" FontSize="18"/>
-        <Button Name="signInBtn" Content="Войти" HorizontalAlignment="Stretch" Margin="12,4,6,4" Grid.Row="3" Grid.Column="0" VerticalAlignment="Stretch" Click="signInBtn_Click" />
-        <Button Name="signUpBtn" Content="Создать аккаунт" HorizontalAlignment="Stretch" Margin="6,4,12,4" Grid.Row="3" Grid.Column="1" VerticalAlignment="Stretch" Click="signUpBtn_Click" />
+        <Button Name="signInBtn" Content="Войти" HorizontalAlignment="Stretch" Margin="12,4,6,4" Grid.Row="3" Grid.Column="0" VerticalAlignment="Stretch" Click="signInBtn_Click" IsDefault="True"/>
+        <Button Name="signUpBtn" Content="Создать аккаунт" HorizontalAlignment="Stretch" Margin="6,4,12,4" Grid.Row="3" Grid.Column="1" VerticalAlignment="Stretch" Click="signUpBtn_Click"/>
         <Label Name="statusLabel" Content="" HorizontalAlignment="Stretch" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Stretch" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="#FF960000" />
     </Grid>
 

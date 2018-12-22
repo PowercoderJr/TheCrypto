@@ -26,6 +26,7 @@ namespace thecrypto
             imapDomainTB.Text = this.mailbox.ImapDomain;
             imapPortTB.Text = this.mailbox.ImapPort.ToString();
             imapAutosetChB.IsChecked = mailbox == null;
+            nameTB.Focus();
         }
 
         private void okBtn_Click(object sender, RoutedEventArgs e)

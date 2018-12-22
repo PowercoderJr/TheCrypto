@@ -95,7 +95,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Send_box.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="WriteLetterWindow.xaml.cs">
       <DependentUpon>WriteLetterWindow.xaml</DependentUpon>

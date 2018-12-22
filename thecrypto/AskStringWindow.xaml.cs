@@ -32,6 +32,7 @@ namespace thecrypto
                 valueTB.Text = value;
 
             this.canBeNull = canBeNull;
+            valueTB.Focus();
         }
 
         private void okBtn_Click(object sender, RoutedEventArgs e)

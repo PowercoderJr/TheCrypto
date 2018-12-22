@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Media;
+using System.Linq;
 
 namespace thecrypto
 {
@@ -50,6 +52,14 @@ namespace thecrypto
         public static string colorToHexString(Color c)
         {
             return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
+        }
+
+        public static int removeByCondition<T>(this ObservableCollection<T> collection, Func<T, bool> condition)
+        {
+            var itemsToRemove = collection.Where(condition).ToList();
+            foreach (var itemToRemove in itemsToRemove)
+                collection.Remove(itemToRemove);
+            return itemsToRemove.Count;
         }
     }
 }

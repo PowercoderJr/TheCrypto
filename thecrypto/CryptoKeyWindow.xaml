@@ -54,7 +54,7 @@
                 </StackPanel>
             </Grid>
         </Border>
-        <Button x:Name="okBtn" Grid.ColumnSpan="2" Content="ОК" HorizontalAlignment="Stretch" Margin="8,0,4,8" Grid.Row="2" VerticalAlignment="Stretch" Click="okBtn_Click"/>
-        <Button x:Name="cancelBtn" Grid.Column="2" Content="Отмена" HorizontalAlignment="Stretch" Margin="4,0,8,8" Grid.Row="2" VerticalAlignment="Stretch" Click="cancelBtn_Click"/>
+        <Button x:Name="okBtn" Grid.ColumnSpan="2" Content="ОК" HorizontalAlignment="Stretch" Margin="8,0,4,8" Grid.Row="2" VerticalAlignment="Stretch" Click="okBtn_Click" IsDefault="True"/>
+        <Button x:Name="cancelBtn" Grid.Column="2" Content="Отмена" HorizontalAlignment="Stretch" Margin="4,0,8,8" Grid.Row="2" VerticalAlignment="Stretch" Click="cancelBtn_Click" IsCancel="True"/>
     </Grid>
 </Window>

@@ -52,7 +52,7 @@
             <CheckBox x:Name="imapAutosetChB" Grid.Row="1" Grid.Column="4" Margin="8,11,0,6" Content="Автоматически" IsChecked="True" HorizontalAlignment="Right"/>
 
         </Grid>
-        <Button x:Name="okBtn" Grid.ColumnSpan="2" Content="ОК" HorizontalAlignment="Stretch" Margin="0,4,4,4" Grid.Row="5" VerticalAlignment="Stretch" Click="okBtn_Click"/>
-        <Button x:Name="cancelBtn" Grid.Column="2" Content="Отмена" HorizontalAlignment="Stretch" Margin="4,4,0,4" Grid.Row="5" VerticalAlignment="Stretch" Click="cancelBtn_Click"/>
+        <Button x:Name="okBtn" Grid.ColumnSpan="2" Content="ОК" HorizontalAlignment="Stretch" Margin="0,4,4,4" Grid.Row="5" VerticalAlignment="Stretch" Click="okBtn_Click" IsDefault="True"/>
+        <Button x:Name="cancelBtn" Grid.Column="2" Content="Отмена" HorizontalAlignment="Stretch" Margin="4,4,0,4" Grid.Row="5" VerticalAlignment="Stretch" Click="cancelBtn_Click" IsCancel="True"/>
     </Grid>
 </Window>
