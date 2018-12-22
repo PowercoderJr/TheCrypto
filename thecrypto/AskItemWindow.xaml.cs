@@ -39,7 +39,7 @@ namespace thecrypto
         {
             if (itemsCB.SelectedIndex < 0 && !canBeNull)
             {
-                Utils.showWarning("Выберите значение");
+                Utils.ShowWarning("Выберите значение");
                 return;
             }
 

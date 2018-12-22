@@ -24,23 +24,23 @@ namespace thecrypto
                 return;
             }
 
-            string expectedDigest = getAccountDigest(login);
+            string expectedDigest = GetAccountDigest(login);
             if (expectedDigest.Length == 0)
             {
                 statusLabel.Content = "Пользователь не найден";
                 return;
             }
 
-            string saltyDigest = Utils.byteArrayToHexString(Cryptography.
-                    getSha1(passTB.Password + Cryptography.SALT));
+            string saltyDigest = Utils.ByteArrayToHexString(Cryptography.
+                    GetSha1(passTB.Password + Cryptography.SALT));
             if (!saltyDigest.Equals(expectedDigest))
             {
                 statusLabel.Content = "Неправильный пароль";
                 return;
             }
 
-            Account account = Account.deserialize(login);
-            start(account);
+            Account account = Account.Deserialize(login);
+            Start(account);
         }
 
         private void signUpBtn_Click(object sender, RoutedEventArgs e)
@@ -53,30 +53,30 @@ namespace thecrypto
                 return;
             }
 
-            if (getAccountDigest(login).Length > 0)
+            if (GetAccountDigest(login).Length > 0)
             {
                 statusLabel.Content = "Пользователь с таким логином уже существует";
                 return;
             }
 
-            string saltyDigest = Utils.byteArrayToHexString(Cryptography.
-                    getSha1(passTB.Password + Cryptography.SALT));
+            string saltyDigest = Utils.ByteArrayToHexString(Cryptography.
+                    GetSha1(passTB.Password + Cryptography.SALT));
             Account user = new Account(login, saltyDigest);
-            user.serialize();
-            using (StreamWriter fs = new StreamWriter(Account.getAccountsListPath(), true))
+            user.Serialize();
+            using (StreamWriter fs = new StreamWriter(Account.GetAccountsListPath(), true))
             {
                 fs.WriteLine(user.login);
                 fs.WriteLine(user.digest);
             }
-            start(user);
+            Start(user);
         }
 
-        private string getAccountDigest(string login)
+        private string GetAccountDigest(string login)
         {
             string digest = "";
-            if (File.Exists(Account.getAccountsListPath()))
+            if (File.Exists(Account.GetAccountsListPath()))
             {
-                string[] info = File.ReadAllLines(Account.getAccountsListPath());
+                string[] info = File.ReadAllLines(Account.GetAccountsListPath());
                 for (int i = 0; digest.Length == 0 && i < info.Length; i += 2)
                     if (info[i].Equals(login))
                         digest = info[i + 1];
@@ -84,7 +84,7 @@ namespace thecrypto
             return digest;
         }
 
-        private void start(Account profile)
+        private void Start(Account profile)
         {
             MainWindow mw = new MainWindow(profile);
             mw.Show();

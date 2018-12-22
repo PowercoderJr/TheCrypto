@@ -49,13 +49,13 @@ namespace thecrypto
             senderNameTB.Text = mailbox.Name;
             sendetAddressTB.Text = "<" + mailbox.Address + ">";
 
-            ObservableCollection<CryptoKey> encryptionKeys = selectKeys(keys, CryptoKey.Purpose.Encryption, true);
+            ObservableCollection<CryptoKey> encryptionKeys = SelectKeys(keys, CryptoKey.Purpose.Encryption, true);
             encryptionCB.ItemsSource = encryptionKeys;
-            ObservableCollection<CryptoKey> signatureKeys = selectKeys(keys, CryptoKey.Purpose.Signature, false);
+            ObservableCollection<CryptoKey> signatureKeys = SelectKeys(keys, CryptoKey.Purpose.Signature, false);
             signatureCB.ItemsSource = signatureKeys;
         }
 
-        public void attachFile(string fullName)
+        public void AttachFile(string fullName)
         {
             FileInfo f = new FileInfo(fullName);
             attachmentsPanel.Items.Add(f);
@@ -68,7 +68,7 @@ namespace thecrypto
             ofd.Multiselect = true;
             if (ofd.ShowDialog().Value)
                 foreach (string filename in ofd.FileNames)
-                    attachFile(filename);
+                    AttachFile(filename);
         }
 
         private void removeAttachmentBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -81,19 +81,19 @@ namespace thecrypto
         {
             if (recipientsTB.Text.Trim().Length == 0)
             {
-                Utils.showWarning("Укажите хотя бы один адрес в поле \"Получатели\"");
+                Utils.ShowWarning("Укажите хотя бы один адрес в поле \"Получатели\"");
                 return;
             }
 
             if (encryptChb.IsChecked.Value && encryptionCB.SelectedItem as CryptoKey == null)
             {
-                Utils.showWarning("Выберите ключ шифрования из списка или снимите галочку");
+                Utils.ShowWarning("Выберите ключ шифрования из списка или снимите галочку");
                 return;
             }
 
             if (signChb.IsChecked.Value && signatureCB.SelectedItem as CryptoKey == null)
             {
-                Utils.showWarning("Выберите подпись из списка или снимите галочку");
+                Utils.ShowWarning("Выберите подпись из списка или снимите галочку");
                 return;
             }
 
@@ -115,8 +115,8 @@ namespace thecrypto
                     message.Headers.Add(Cryptography.KEY_DELIVERY_HEADER, "public");
 
                     string filename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "tcr-public.key");
-                    KeyToDeliver.serializeToFile(filename);
-                    attachFile(filename);
+                    KeyToDeliver.SerializeToFile(filename);
+                    AttachFile(filename);
 
                     string purpuse;
                     if (KeyToDeliver.KeyPurpose == CryptoKey.Purpose.Encryption)
@@ -128,10 +128,10 @@ namespace thecrypto
 
                     string ownerMatch;
                     if (KeyToDeliver.OwnerAddress.Equals(mailbox.Address))
-                        ownerMatch = "<span style=\"color: " + Utils.colorToHexString(Colors.Green) +
+                        ownerMatch = "<span style=\"color: " + Utils.ColorToHexString(Colors.Green) +
                                 "\">ключ принадлежит отправителю</span>";
                     else
-                        ownerMatch = "<span style=\"color: " + Utils.colorToHexString(Colors.DarkOrange) +
+                        ownerMatch = "<span style=\"color: " + Utils.ColorToHexString(Colors.DarkOrange) +
                                 "\">не совпадает с адресом отправителя</span>";
 
                     StringBuilder body = new StringBuilder();
@@ -147,7 +147,7 @@ namespace thecrypto
                 CryptoKey signatureKey = signatureCB.SelectedItem as CryptoKey;
                 if (signatureKey != null)
                 {
-                    string signature = Cryptography.sign(message.Body, signatureKey);
+                    string signature = Cryptography.Sign(message.Body, signatureKey);
                     message.Headers.Add(Cryptography.SIGNATURE_ID_HEADER, signatureKey.Id);
                     message.Headers.Add(Cryptography.SIGNATURE_HEADER, signature);
                 }
@@ -155,7 +155,7 @@ namespace thecrypto
                 CryptoKey encryptionKey = encryptionCB.SelectedItem as CryptoKey;
                 if (encryptionKey != null)
                 {
-                    message.Body = Cryptography.encrypt(message.Body, encryptionKey);
+                    message.Body = Cryptography.Encrypt(message.Body, encryptionKey);
                     message.Headers.Add(Cryptography.ENCRYPTION_ID_HEADER, encryptionKey.Id);
                 }
 
@@ -175,12 +175,12 @@ namespace thecrypto
                 }
                 catch (Exception ex)
                 {
-                    Utils.showError(ex.Message);
+                    Utils.ShowError(ex.Message);
                 }
             }
         }
 
-        private ObservableCollection<CryptoKey> selectKeys(ObservableCollection<CryptoKey> keys,
+        private ObservableCollection<CryptoKey> SelectKeys(ObservableCollection<CryptoKey> keys,
             CryptoKey.Purpose purpose, bool includePublic)
         {
             return new ObservableCollection<CryptoKey>(keys.Where(key =>

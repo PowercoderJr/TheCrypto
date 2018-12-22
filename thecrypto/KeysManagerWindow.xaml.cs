@@ -34,10 +34,10 @@ namespace thecrypto
             this.account = account;
             this.filteredKeys = new ObservableCollection<CryptoKey>();
             this.keysLB.ItemsSource = this.filteredKeys;
-            filterKeys();
+            FilterKeys();
         }
 
-        public static bool addKey(Account account, CryptoKey key)
+        public static bool AddKey(Account account, CryptoKey key)
         {
             // TODO: вдруг ID разных ключей совпадут
             List<CryptoKey> results = account.keys.Where(k => k.Id == key.Id).ToList();
@@ -68,14 +68,14 @@ namespace thecrypto
             CryptoKeyWindow ckw = new CryptoKeyWindow(account.mailboxes);
             if (ckw.ShowDialog().Value)
             {
-                if (addKey(account, ckw.key))
+                if (AddKey(account, ckw.key))
                 {
-                    filterKeys();
-                    account.serialize();
+                    FilterKeys();
+                    account.Serialize();
                 }
                 else
                 {
-                    Utils.showWarning("Такой ключ уже есть в библиотеке ключей");
+                    Utils.ShowWarning("Такой ключ уже есть в библиотеке ключей");
                 }
             }
         }
@@ -83,12 +83,12 @@ namespace thecrypto
         private void removeKeyBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             CryptoKey key = keysLB.SelectedItem as CryptoKey;
-            if (Utils.showConfirmation("Вы действительно хотите удалить ключ \"" + 
+            if (Utils.ShowConfirmation("Вы действительно хотите удалить ключ \"" + 
                     key.Name + "\"?") == MessageBoxResult.Yes)
             {
                 account.keys.Remove(key);
                 filteredKeys.Remove(key);
-                account.serialize();
+                account.Serialize();
             }
         }
 
@@ -99,8 +99,8 @@ namespace thecrypto
             if (asw.ShowDialog().Value)
             {
                 key.Name = asw.valueTB.Text.Trim();
-                filterKeys();
-                account.serialize();
+                FilterKeys();
+                account.Serialize();
             }
         }
 
@@ -112,7 +112,7 @@ namespace thecrypto
             sfd.FileName = key.Name + CryptoKey.DEFAULT_EXT;
             sfd.DefaultExt = CryptoKey.DEFAULT_EXT;
             if (sfd.ShowDialog().Value)
-                key.serializeToFile(sfd.FileName);
+                key.SerializeToFile(sfd.FileName);
         }
 
         private void sendKeyBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -131,7 +131,7 @@ namespace thecrypto
                         wlw.signatureCB.IsEnabled = false;
 
                 CryptoKey key = keysLB.SelectedItem as CryptoKey;
-                wlw.KeyToDeliver = key.getPublicCryptoKey();
+                wlw.KeyToDeliver = key.GetPublicCryptoKey();
 
                 wlw.Show();
             }
@@ -159,10 +159,10 @@ namespace thecrypto
 
         private void filterTB_TextChanged(object sender, TextChangedEventArgs e)
         {
-            filterKeys();
+            FilterKeys();
         }
 
-        private void filterKeys()
+        private void FilterKeys()
         {
             filteredKeys.Clear();
             foreach (CryptoKey key in account.keys)

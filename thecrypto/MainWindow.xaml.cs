@@ -125,11 +125,11 @@ namespace thecrypto
                 if (!account.mailboxes.Any(item => item.Address.Equals(address)))
                 {
                     account.mailboxes.Add(mw.mailbox);
-                    account.serialize();
+                    account.Serialize();
                 }
                 else
                 {
-                    Utils.showWarning(address + " уже есть в списке почтовых ящиков");
+                    Utils.ShowWarning(address + " уже есть в списке почтовых ящиков");
                 }
             }
         }
@@ -149,7 +149,7 @@ namespace thecrypto
                     account.mailboxes.Insert(index, mw.mailbox);
                     mailboxesLB.SelectedIndex = index;
                     // TEMP/
-                    account.serialize();
+                    account.Serialize();
                 }
             }
         }
@@ -159,40 +159,40 @@ namespace thecrypto
             Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
             if (mailbox != null)
             {
-                if (Utils.showConfirmation("Вы действительно хотите удалить " + mailboxesLB.SelectedItem +
+                if (Utils.ShowConfirmation("Вы действительно хотите удалить " + mailboxesLB.SelectedItem +
                         " из списка почтовых ящиков? Сохранённые письма и ключи этого ящика также будут удалены.")
                         == MessageBoxResult.Yes)
                 {
                     account.mailboxes.RemoveAt(mailboxesLB.SelectedIndex);
-                    string mailboxPath = System.IO.Path.Combine(account.getAccountPath(), mailbox.Address);
+                    string mailboxPath = System.IO.Path.Combine(account.GetAccountPath(), mailbox.Address);
                     if (Directory.Exists(mailboxPath))
                         Directory.Delete(mailboxPath, true);
-                    Utils.removeByCondition(account.keys, k => k.OwnerAddress.Equals(mailbox.Address));
-                    account.serialize();
+                    Utils.RemoveByCondition(account.keys, k => k.OwnerAddress.Equals(mailbox.Address));
+                    account.Serialize();
 
                     if (mailbox == CurrMailbox)
                     {
                         currEmailLabel.Content = null;
                         lettersTV.Items.Clear();
-                        fillLetterForm(null);
+                        FillLetterForm(null);
                         CurrMailbox = null;
                     }
                 }
             }
         }
 
-        private void checkoutMailbox(Mailbox mailbox)
+        private void CheckoutMailbox(Mailbox mailbox)
         {
             currEmailLabel.Content = "Выполняется подключение...";
             lettersTV.Items.Clear();
-            fillLetterForm(null);
+            FillLetterForm(null);
             // TODO: выполнять подключение и загрузку писем в отдельном потоке
-            if (imapConnect(mailbox))
+            if (ImapConnect(mailbox))
             {
                 this.CurrMailbox = mailbox;
                 currEmailLabel.Content = mailbox;
-                downloadLetters();
-                displayLetters();
+                DownloadLetters();
+                DisplayLetters();
             }
             else
             {
@@ -205,12 +205,12 @@ namespace thecrypto
         {
             Mailbox mailbox = mailboxesLB.SelectedItem as Mailbox;
             if (mailbox != null)
-                checkoutMailbox(mailbox);
+                CheckoutMailbox(mailbox);
         }
 
-        private bool imapConnect(Mailbox mailbox)
+        private bool ImapConnect(Mailbox mailbox)
         {
-            disposeImap();
+            DisposeImap();
             imap = new ImapClient();
             imap.Connect(mailbox.ImapDomain, mailbox.ImapPort, account.useSsl);
             try
@@ -222,29 +222,29 @@ namespace thecrypto
             }
             catch (Exception e)
             {
-                Utils.showWarning(e.Message);
+                Utils.ShowWarning(e.Message);
             }
             /*else
                 Utils.showWarning("Ошибка соединения IMAP");*/
             return false;
         }
 
-        public void downloadLetters()
+        public void DownloadLetters()
         {
             /*foreach (ImapFolder folder in imap.GetFolders(imap.PersonalNamespaces.First()))
                 downloadFolder(folder);*/
-            downloadFolder(imap.GetFolder(imap.PersonalNamespaces.First()) as ImapFolder);
+            DownloadFolder(imap.GetFolder(imap.PersonalNamespaces.First()) as ImapFolder);
         }
 
-        private void downloadFolder(ImapFolder folder)
+        private void DownloadFolder(ImapFolder folder)
         {
             foreach (ImapFolder subfolder in folder.GetSubfolders())
-                downloadFolder(subfolder);
+                DownloadFolder(subfolder);
 
             if (folder.Attributes != FolderAttributes.None && (folder.Attributes & FolderAttributes.NonExistent) == 0)
             {
                 folder.Open(FolderAccess.ReadOnly);
-                string dirPath = System.IO.Path.Combine(account.getAccountPath(), CurrMailbox.Address, folder.Name);
+                string dirPath = System.IO.Path.Combine(account.GetAccountPath(), CurrMailbox.Address, folder.Name);
                 if (!Directory.Exists(dirPath))
                     Directory.CreateDirectory(dirPath);
 
@@ -262,22 +262,22 @@ namespace thecrypto
             }
         }
 
-        private void displayLetters()
+        private void DisplayLetters()
         {
-            string dirPath = System.IO.Path.Combine(account.getAccountPath(), CurrMailbox.Address);
+            string dirPath = System.IO.Path.Combine(account.GetAccountPath(), CurrMailbox.Address);
             if (!Directory.Exists(dirPath))
             {
-                Utils.showError("Этот почтовый ящик не был синхронизирован");
+                Utils.ShowError("Этот почтовый ящик не был синхронизирован");
                 return;
             }
 
-            displayFolder(dirPath, lettersTV.Items);
+            DisplayFolder(dirPath, lettersTV.Items);
         }
 
-        private void displayFolder(string dirPath, ItemCollection collection)
+        private void DisplayFolder(string dirPath, ItemCollection collection)
         {
             foreach (string subdirPath in Directory.GetDirectories(dirPath))
-                displayFolder(subdirPath, collection);
+                DisplayFolder(subdirPath, collection);
 
             TreeViewItem twi = new TreeViewItem();
             string[] messages = Directory.GetFiles(dirPath, "*.eml");
@@ -301,11 +301,11 @@ namespace thecrypto
             if (message != null)
             {
                 // TODO: добавить флаг "прочитано"
-                fillLetterForm(message);
+                FillLetterForm(message);
             }
         }
 
-        private void fillLetterForm(MimeMessage message)
+        private void FillLetterForm(MimeMessage message)
         {
             CurrMessage = message;
             if (message == null)
@@ -351,7 +351,7 @@ namespace thecrypto
                     {
                         CryptoKey key = results.First();
                         // TODO: обработать неудачу
-                        body = Cryptography.decrypt(body, key);
+                        body = Cryptography.Decrypt(body, key);
 
                         encryptionStatusLabel.Content = encryptionStatusLabel.ToolTip =
                                 "Расшифровано с помощью \"" + key + "\"";
@@ -379,7 +379,7 @@ namespace thecrypto
                     if (results.Count > 0)
                     {
                         CryptoKey key = results.First();
-                        if (Cryptography.verify(body, message.Headers[Cryptography.SIGNATURE_HEADER], key))
+                        if (Cryptography.Verify(body, message.Headers[Cryptography.SIGNATURE_HEADER], key))
                         {
                             signatureStatusLabel.Content = signatureStatusLabel.ToolTip =
                                     "Верифицировано с помощью \"" + key + "\"";
@@ -429,15 +429,15 @@ namespace thecrypto
                     // Получить объект ключа
                     MimeEntity attachment = message.Attachments.First();
                     string tmpFile = System.IO.Path.GetTempFileName();
-                    saveAttachment(attachment, tmpFile);
-                    CryptoKey key = CryptoKey.deserializeFromFile(tmpFile);
+                    SaveAttachment(attachment, tmpFile);
+                    CryptoKey key = CryptoKey.DeserializeFromFile(tmpFile);
 
-                    if (Utils.showConfirmation("Добавить ключ \"" + key + "\" в библиотеку ключей?") == MessageBoxResult.Yes)
+                    if (Utils.ShowConfirmation("Добавить ключ \"" + key + "\" в библиотеку ключей?") == MessageBoxResult.Yes)
                     {
-                        if (KeysManagerWindow.addKey(account, key))
-                            account.serialize();
+                        if (KeysManagerWindow.AddKey(account, key))
+                            account.Serialize();
                         else
-                            Utils.showWarning("Такой ключ уже есть в библиотеке ключей");
+                            Utils.ShowWarning("Такой ключ уже есть в библиотеке ключей");
                     }
                 }
                 else
@@ -459,10 +459,10 @@ namespace thecrypto
             sfd.Title = "Сохранить файл...";
             sfd.FileName = attachment.ContentDisposition?.FileName ?? attachment.ContentType.Name;
             if (sfd.ShowDialog(this).Value)
-                saveAttachment(attachment, sfd.FileName);
+                SaveAttachment(attachment, sfd.FileName);
         }
 
-        private void saveAttachment(MimeEntity attachment, string filepath)
+        private void SaveAttachment(MimeEntity attachment, string filepath)
         {
             using (var stream = File.Create(filepath))
             {
@@ -489,7 +489,7 @@ namespace thecrypto
         private void refreshBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             lettersTV.Items.Clear();
-            downloadLetters();
+            DownloadLetters();
         }
 
         private void keyManagerBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -520,7 +520,7 @@ namespace thecrypto
             wlw.Show();
         }
 
-        private void disposeImap()
+        private void DisposeImap()
         {
             if (imap != null)
             {
@@ -532,7 +532,7 @@ namespace thecrypto
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            disposeImap();
+            DisposeImap();
         }
     }
 }

@@ -22,7 +22,7 @@ namespace thecrypto
         private const PaddingMode DES_PADDING_MODE = PaddingMode.ISO10126;
         private static readonly string SIGN_HASH_ALGORITHM_NAME = HashAlgorithmName.SHA1.Name;
 
-        public static byte[] getSHA1(byte[] data)
+        public static byte[] GetSha1(byte[] data)
         {
             byte[] hash;
             using (SHA1Managed sha1 = new SHA1Managed())
@@ -30,12 +30,12 @@ namespace thecrypto
             return hash;
         }
 
-        public static byte[] getSha1(string data)
+        public static byte[] GetSha1(string data)
         {
-            return getSHA1(E.GetBytes(data));
+            return GetSha1(E.GetBytes(data));
         }
 
-        public static string encrypt(string data, CryptoKey rsaPublicKey)
+        public static string Encrypt(string data, CryptoKey rsaPublicKey)
         {
             byte[] encryptedData, encryptedDesKey, desIV;
             try
@@ -52,8 +52,8 @@ namespace thecrypto
                     des.Mode = DES_CIPHER_MODE;
                     des.GenerateKey();
                     des.GenerateIV();
-                    encryptedData = desEncrypt(data, des.Key, des.IV);
-                    encryptedDesKey = rsaEncrypt(des.Key, rsaParams, DO_OAEP_PADDING);
+                    encryptedData = DesEncrypt(data, des.Key, des.IV);
+                    encryptedDesKey = RsaEncrypt(des.Key, rsaParams, DO_OAEP_PADDING);
                     desIV = des.IV;
                 }
             }
@@ -76,7 +76,7 @@ namespace thecrypto
             ).ToString();
         }
 
-        public static string decrypt(string crtptopack, CryptoKey rsaPrivateKey)
+        public static string Decrypt(string crtptopack, CryptoKey rsaPrivateKey)
         {
             string decryptedData;
             try
@@ -90,9 +90,9 @@ namespace thecrypto
 
                 XDocument cryptopackXml = XDocument.Parse(crtptopack);
                 byte[] data = Convert.FromBase64String(cryptopackXml.Element("root").Element("data").Value);
-                byte[] desKey = rsaDecrypt(Convert.FromBase64String(cryptopackXml.Element("root").Element("key").Value), rsaParams, DO_OAEP_PADDING);
+                byte[] desKey = RsaDecrypt(Convert.FromBase64String(cryptopackXml.Element("root").Element("key").Value), rsaParams, DO_OAEP_PADDING);
                 byte[] desIV = Convert.FromBase64String(cryptopackXml.Element("root").Element("IV").Value);
-                decryptedData = desDecrypt(data, desKey, desIV);
+                decryptedData = DesDecrypt(data, desKey, desIV);
             }
             catch (Exception ex)
             {
@@ -104,7 +104,7 @@ namespace thecrypto
             return decryptedData;
         }
 
-        public static byte[] desEncrypt(string plainText, byte[] key, byte[] IV)
+        public static byte[] DesEncrypt(string plainText, byte[] key, byte[] IV)
         {
             if (plainText == null || plainText.Length <= 0)
                 throw new ArgumentNullException("plainText");
@@ -136,7 +136,7 @@ namespace thecrypto
             return encrypted;
         }
 
-        public static string desDecrypt(byte[] cipherText, byte[] key, byte[] IV)
+        public static string DesDecrypt(byte[] cipherText, byte[] key, byte[] IV)
         {
             if (cipherText == null || cipherText.Length <= 0)
                 throw new ArgumentNullException("cipherText");
@@ -162,7 +162,7 @@ namespace thecrypto
             return plaintext;
         }
 
-        public static byte[] rsaEncrypt(byte[] dataToEncrypt, RSAParameters RSAKeyInfo, bool doOAEPPadding = DO_OAEP_PADDING)
+        public static byte[] RsaEncrypt(byte[] dataToEncrypt, RSAParameters RSAKeyInfo, bool doOAEPPadding = DO_OAEP_PADDING)
         {
             try
             {
@@ -181,7 +181,7 @@ namespace thecrypto
             }
         }
 
-        public static byte[] rsaDecrypt(byte[] dataToDecrypt, RSAParameters RSAKeyInfo, bool doOAEPPadding = DO_OAEP_PADDING)
+        public static byte[] RsaDecrypt(byte[] dataToDecrypt, RSAParameters RSAKeyInfo, bool doOAEPPadding = DO_OAEP_PADDING)
         {
             try
             {
@@ -200,7 +200,7 @@ namespace thecrypto
             }
         }
 
-        public static string sign(string data, CryptoKey dsaPrivateKey)
+        public static string Sign(string data, CryptoKey dsaPrivateKey)
         {
             byte[] signature;
             using (DSACryptoServiceProvider dsa = new DSACryptoServiceProvider())
@@ -211,19 +211,19 @@ namespace thecrypto
                     dsa.FromXmlString(dsaPrivateKey.PrivateKey);
                     dsaParams = dsa.ExportParameters(true);
 
-                    byte[] hash = getSha1(data);
+                    byte[] hash = GetSha1(data);
                     signature = dsa.SignHash(hash, SIGN_HASH_ALGORITHM_NAME);
                 }
                 catch (Exception ex)
                 {
                     signature = null;
-                    Utils.showError(ex.Message);
+                    Utils.ShowError(ex.Message);
                 }
             }
-            return signature == null ? null : Utils.byteArrayToHexString(signature);
+            return signature == null ? null : Utils.ByteArrayToHexString(signature);
         }
 
-        public static bool verify(string data, string signature, CryptoKey dsaPublicKey)
+        public static bool Verify(string data, string signature, CryptoKey dsaPublicKey)
         {
             using (DSACryptoServiceProvider dsa = new DSACryptoServiceProvider())
             {
@@ -233,12 +233,12 @@ namespace thecrypto
                     dsa.FromXmlString(dsaPublicKey.PublicKey);
                     dsaParams = dsa.ExportParameters(false);
 
-                    byte[] hash = getSha1(data);
-                    return dsa.VerifyHash(hash, SIGN_HASH_ALGORITHM_NAME, Utils.hexStringToByteArray(signature));
+                    byte[] hash = GetSha1(data);
+                    return dsa.VerifyHash(hash, SIGN_HASH_ALGORITHM_NAME, Utils.HexStringToByteArray(signature));
                 }
                 catch (Exception ex)
                 {
-                    Utils.showError(ex.Message);
+                    Utils.ShowError(ex.Message);
                 }
             }
             return false;

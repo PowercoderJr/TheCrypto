@@ -19,22 +19,22 @@ namespace thecrypto
         public const string ACCOUNTS_LIST_FILENAME = "list.txt";
         public const string ACCOUNT_FILENAME = "account.tcr";
 
-        public static string getAccountsDirPath()
+        public static string GetAccountsDirPath()
         {
             return ACCOUNTS_DIR_NAME;
         }
 
-        public static string getAccountsListPath()
+        public static string GetAccountsListPath()
         {
             return Path.Combine(ACCOUNTS_DIR_NAME, ACCOUNTS_LIST_FILENAME);
         }
 
-        public static string getAccountFilePath(string login)
+        public static string GetAccountFilePath(string login)
         {
             return Path.Combine(ACCOUNTS_DIR_NAME, login, ACCOUNT_FILENAME);
         }
 
-        public static string getAccountPath(string login)
+        public static string GetAccountPath(string login)
         {
             return Path.Combine(ACCOUNTS_DIR_NAME, login);
         }
@@ -57,30 +57,30 @@ namespace thecrypto
             this.keys = new ObservableCollection<CryptoKey>();
         }
 
-        public string getAccountPath()
+        public string GetAccountPath()
         {
-            return getAccountPath(login);
+            return GetAccountPath(login);
         }
 
-        public string getAccountFilePath()
+        public string GetAccountFilePath()
         {
-            return getAccountFilePath(login);
+            return GetAccountFilePath(login);
         }
 
-        public void serialize()
+        public void Serialize()
         {
             Directory.CreateDirectory(Path.Combine(ACCOUNTS_DIR_NAME, login));
-            using (FileStream fstream = File.Open(getAccountFilePath(), FileMode.Create))
+            using (FileStream fstream = File.Open(GetAccountFilePath(), FileMode.Create))
             {
                 BinaryFormatter bf = new BinaryFormatter();
                 bf.Serialize(fstream, this);
             }
         }
 
-        public static Account deserialize(string login)
+        public static Account Deserialize(string login)
         {
             Account account = null;
-            using (FileStream fstream = File.Open(getAccountFilePath(login), FileMode.Open))
+            using (FileStream fstream = File.Open(GetAccountFilePath(login), FileMode.Open))
             {
                 BinaryFormatter binaryFormatter = new BinaryFormatter();
                 account = binaryFormatter.Deserialize(fstream) as Account;

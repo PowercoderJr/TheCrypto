@@ -39,7 +39,7 @@ namespace thecrypto
         {
             if (valueTB.Text.Trim().Length == 0 && !canBeNull)
             {
-                Utils.showWarning("Введите значение");
+                Utils.ShowWarning("Введите значение");
                 return;
             }
 

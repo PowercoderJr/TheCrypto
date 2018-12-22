@@ -10,27 +10,27 @@ namespace thecrypto
 {
     public static class Utils
     {
-        public static void showError(string message)
+        public static void ShowError(string message)
         {
             MessageBox.Show(message, "Операция успешно завершена неудачей", MessageBoxButton.OK, MessageBoxImage.Error);
         }
-        public static void showWarning(string message)
+        public static void ShowWarning(string message)
         {
             MessageBox.Show(message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        public static MessageBoxResult showConfirmation(string message)
+        public static MessageBoxResult ShowConfirmation(string message)
         {
             return MessageBox.Show(message, "Подтвердите действие", MessageBoxButton.YesNo, MessageBoxImage.Question);
         }
 
-        public static bool validateEmail(this string s)
+        public static bool ValidateEmail(this string s)
         {
             Regex regex = new Regex(@"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
             return regex.IsMatch(s);
         }
 
-        public static string byteArrayToHexString(byte[] input)
+        public static string ByteArrayToHexString(byte[] input)
         {
             StringBuilder output = new StringBuilder();
             foreach (byte x in input)
@@ -38,7 +38,7 @@ namespace thecrypto
             return output.ToString();
         }
 
-        public static byte[] hexStringToByteArray(string hex)
+        public static byte[] HexStringToByteArray(string hex)
         {
             if (hex.Length % 2 > 0)
                 throw new FormatException("Строка должна иметь чётное число символов");
@@ -49,12 +49,12 @@ namespace thecrypto
             return bytes;
         }
 
-        public static string colorToHexString(Color c)
+        public static string ColorToHexString(Color c)
         {
             return "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
         }
 
-        public static int removeByCondition<T>(this ObservableCollection<T> collection, Func<T, bool> condition)
+        public static int RemoveByCondition<T>(this ObservableCollection<T> collection, Func<T, bool> condition)
         {
             var itemsToRemove = collection.Where(condition).ToList();
             foreach (var itemToRemove in itemsToRemove)

@@ -43,7 +43,7 @@ namespace thecrypto
                 Purpose purpose)
         {
             this.Name = name;
-            this.Id = Utils.byteArrayToHexString(Cryptography.getSha1(publicKey));
+            this.Id = Utils.ByteArrayToHexString(Cryptography.GetSha1(publicKey));
             this.OwnerAddress = ownerAddress;
             this.PublicKey = publicKey;
             this.PrivateKey = privateKey;
@@ -68,14 +68,14 @@ namespace thecrypto
             return o;
         }*/
 
-        public CryptoKey getPublicCryptoKey()
+        public CryptoKey GetPublicCryptoKey()
         {
             CryptoKey output = new CryptoKey(PublicKey, null, Name, OwnerAddress, KeyPurpose);
             output.DateTime = this.DateTime;
             return output;
         }
 
-        public void serializeToFile(string filename)
+        public void SerializeToFile(string filename)
         {
             using (FileStream fstream = File.Open(filename, FileMode.Create))
             {
@@ -84,7 +84,7 @@ namespace thecrypto
             }
         }
 
-        public static CryptoKey deserializeFromFile(string filename)
+        public static CryptoKey DeserializeFromFile(string filename)
         {
             CryptoKey key = null;
             using (FileStream fstream = File.Open(filename, FileMode.Open))

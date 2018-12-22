@@ -39,7 +39,7 @@ namespace thecrypto
             {
                 if (filepathTB.Text.Length == 0)
                 {
-                    Utils.showWarning("Укажите путь к файлу");
+                    Utils.ShowWarning("Укажите путь к файлу");
                     return;
                 }
 
@@ -53,7 +53,7 @@ namespace thecrypto
                 }
                 catch (Exception ex)
                 {
-                    Utils.showError(ex.Message);
+                    Utils.ShowError(ex.Message);
                     return;
                 }
             }
@@ -62,7 +62,7 @@ namespace thecrypto
                 string name = nameTB.Text.Trim();
                 if (name.Length == 0 || ownerCB.SelectedItem == null)
                 {
-                    Utils.showWarning("Заполните все поля");
+                    Utils.ShowWarning("Заполните все поля");
                     return;
                 }
 

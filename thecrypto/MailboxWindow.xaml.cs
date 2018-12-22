@@ -34,22 +34,22 @@ namespace thecrypto
             string name = nameTB.Text.Trim();
             string address = addressTB.Text.Trim();
 
-            if (!Utils.validateEmail(address))
+            if (!Utils.ValidateEmail(address))
             {
-                Utils.showWarning("Введён некорректный адрес");
+                Utils.ShowWarning("Введён некорректный адрес");
                 return;
             }
 
             if (smtpAutosetChB.IsChecked.Value)
             {
-                string server = getServerByEmail(address);
+                string server = GetServerByEmail(address);
                 smtpDomainTB.Text = DEFAULT_SMTP_SUBDOMAIN + server;
                 smtpPortTB.Text = DEFAULT_SMTP_PORT;
             }
 
             if (imapAutosetChB.IsChecked.Value)
             {
-                string server = getServerByEmail(address);
+                string server = GetServerByEmail(address);
                 imapDomainTB.Text = DEFAULT_IMAP_SUBDOMAIN + server;
                 imapPortTB.Text = DEFAULT_IMAP_PORT;
             }
@@ -58,7 +58,7 @@ namespace thecrypto
                     smtpDomainTB.Text.Trim().Length == 0 || smtpPortTB.Text.Length == 0 ||
                     imapDomainTB.Text.Length == 0 || imapPortTB.Text.Length == 0)
             {
-                Utils.showWarning("Заполните все поля");
+                Utils.ShowWarning("Заполните все поля");
                 return;
             }
 
@@ -72,14 +72,14 @@ namespace thecrypto
             }
             catch
             {
-                Utils.showWarning("Введён некорректный порт");
+                Utils.ShowWarning("Введён некорректный порт");
                 return;
             }
 
             DialogResult = true;
         }
 
-        private static string getServerByEmail(string email)
+        private static string GetServerByEmail(string email)
         {
             string server = email.Substring(email.IndexOf('@') + 1);
             if (server.Equals("inbox.ru") || server.Equals("bk.ru") || server.Equals("mail.ua"))
