@@ -186,19 +186,16 @@ namespace thecrypto
             currEmailLabel.Content = "Выполняется подключение...";
             lettersTV.Items.Clear();
             FillLetterForm(null);
+            this.CurrMailbox = mailbox;
+            currEmailLabel.Content = mailbox;
             // TODO: выполнять подключение и загрузку писем в отдельном потоке
             if (ImapConnect(mailbox))
-            {
-                this.CurrMailbox = mailbox;
-                currEmailLabel.Content = mailbox;
                 DownloadLetters();
-                DisplayLetters();
-            }
             else
-            {
-                currEmailLabel.Content = "";
-            }
-
+                Utils.ShowWarning("Не удалось подключиться к почтовому серверу." +
+                        " Будут отображены только письма, которые синхронизированные" +
+                        " во время последнего сеанса.");
+            DisplayLetters();
         }
 
         private void mailboxesLB_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -222,7 +219,7 @@ namespace thecrypto
             }
             catch (Exception e)
             {
-                Utils.ShowWarning(e.Message);
+                //Utils.ShowWarning(e.Message);
             }
             /*else
                 Utils.showWarning("Ошибка соединения IMAP");*/
@@ -271,7 +268,8 @@ namespace thecrypto
                 return;
             }
 
-            DisplayFolder(dirPath, lettersTV.Items);
+            foreach (string subdirPath in Directory.GetDirectories(dirPath))
+                DisplayFolder(subdirPath, lettersTV.Items);
         }
 
         private void DisplayFolder(string dirPath, ItemCollection collection)
@@ -489,8 +487,13 @@ namespace thecrypto
         private void refreshBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             lettersTV.Items.Clear();
-            DownloadLetters();
-            DisplayLetters();
+            if (imap.PersonalNamespaces.Count == 0)
+                CheckoutMailbox(CurrMailbox);
+            else
+            {
+                DownloadLetters();
+                DisplayLetters();
+            }
         }
 
         private void keyManagerBtn_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:thecrypto"
         mc:Ignorable="d"
-        Title="CryptoKeyWindow" Height="282" Width="500" WindowStyle="ToolWindow" ResizeMode="NoResize">
+        Title="The Crypto - криптографический ключ" Height="282" Width="500" WindowStyle="ToolWindow" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
